@@ -16,6 +16,7 @@ void setup() {
 
 void loop() {
   serialManager.idle();
+  
 }
 
 void onParse(char* message, int value) {
