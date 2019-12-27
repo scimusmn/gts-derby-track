@@ -1,14 +1,10 @@
-# SMM Create React App project boilerplate
+# 3 lane Derby track timer software.
 
-This is a boilerplate project for our React applications.
+SMM created software for Gateway To Science (Bismark, ND)
 
-First we generate the boilerplate using [create-react-app](https://github.com/facebook/create-react-app). Then we eject the project and apply our in-house customizations that we use on most projects.
+An arduino (Metro Mini) controls and watches for each track:
+ - a solenoid(releases the cars),
+ - a starting beam break sensor (determines active tracks and time car leaves start.)
+ - a finish beam break sensor (records race finish time.) 
 
- - Add Airbnb ESLint config
- - Add React Router
- - Add Bootstrap and Reactstrap
- - Modify main App component, adding SMM boilerplate
-
-## Documentation
-Internal SMM docs: https://projects.smm.org/docs/display/MED/React
-
+React app displays active tracks and finish times when race ends.
