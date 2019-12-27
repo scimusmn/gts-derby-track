@@ -6,6 +6,7 @@ void setup() {
   long baudRate = 115200;
   // Enables/disables debug messaging from ArduinoJson
   boolean arduinoJsonDebug = false;
+  track1 = Track(solenoid_pins[0], start_pins[0], finish_pins[0]);
 
   // Ensure Serial Port is open and ready to communicate
   serialManager.setup(baudRate, [](char* message, char* value) {
@@ -16,7 +17,7 @@ void setup() {
 
 void loop() {
   serialManager.idle();
-  
+
 }
 
 void onParse(char* message, int value) {
