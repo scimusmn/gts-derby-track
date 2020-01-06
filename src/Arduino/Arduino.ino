@@ -4,10 +4,12 @@
 
 
 SerialManager serialManager;
-int solenoid_pins[] = {5,2};
-int start_pins[] = {1,2};
-int finish_pins[] = {6,2};
+int solenoid_pins[] = {5,5,5};
+int start_pins[] = {8,9,10};
+int finish_pins[] = {6,6,6};
 Track track1(1,solenoid_pins[0], start_pins[0], finish_pins[0], &serialManager);
+Track track2(2,solenoid_pins[1], start_pins[1], finish_pins[1], &serialManager);
+Track track3(3,solenoid_pins[2], start_pins[2], finish_pins[2], &serialManager);
 
 
 void setup() {
@@ -28,10 +30,12 @@ void loop() {
   if (track1.is_Racing){
     track1.watchFinish();
   }
-
-  // track2.watchFinish();
-  // track3.watchFinish();
-
+  if (track2.is_Racing){
+    track2.watchFinish();
+  }
+  if (track3.is_Racing){
+    track3.watchFinish();
+  }
 
 }
 
@@ -50,33 +54,36 @@ void onParse(char* message, int value) {
   if (strcmp(message, "wake-arduino") == 0 && value == 1) {
     serialManager.sendJsonMessage("arduino-ready", 1);
   }
+
+  else if (strcmp(message, "reset-race") == 0) {
+    track1.reset();
+    track2.reset();
+    track3.reset();
+
+  }
   else if (strcmp(message, "racing") == 0) {
-    track1.is_Racing = true;
-    startRace();
+    tone(tone_pin, 500);
+    delay(300);
+    noTone(tone_pin);
+    delay(300);
+    tone(tone_pin, 500);
+    delay(300);
+    noTone(tone_pin);
+    delay(300);
+    tone(tone_pin, 500);
+    delay(300);
+    noTone(tone_pin);
+    delay(300);
+    tone(tone_pin, 700);
+    delay(1000);
+    noTone(tone_pin);
+    track1.startRace();
+    track2.startRace();
+    track3.startRace();
   }
 
   else {
     serialManager.sendJsonMessage("unknown-command", 1);
     serialManager.sendJsonMessage(message, value);
   }
-}
-
-void startRace() {
-  tone(tone_pin, 500);
-  delay(500);
-  noTone(tone_pin);
-  delay(500);
-  tone(tone_pin, 500);
-  delay(500);
-  noTone(tone_pin);
-  delay(500);
-  tone(tone_pin, 500);
-  delay(500);
-  noTone(tone_pin);
-  delay(500);
-  tone(tone_pin, 700);
-  delay(1000);
-  noTone(tone_pin);
-  track1.startRace();
-
 }

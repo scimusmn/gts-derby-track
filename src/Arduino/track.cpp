@@ -37,12 +37,26 @@ void Track::watchFinish(void)
 
 }
 
+void Track::reset(void)
+{
+  digitalWrite(solenoid_pin, LOW);
+  is_Racing = false;
+  if (!digitalRead(finish_beam_pin)){
+    serialManager->sendJsonMessage("finish_sensor_error", track_num);
+  }
+}
+
 void Track::startRace(void)
 {
-  startTime = millis();
-  is_Racing = true;
-  //serialManager->sendJsonMessage("started", solenoid_pin);
-  digitalWrite(solenoid_pin, HIGH);
+  if (digitalRead(start_beam_pin)){
+    startTime = millis();
+    is_Racing = true;
+    String message = "track_";
+    message += track_num;
+    serialManager->sendJsonMessage(message, 1);
+    digitalWrite(solenoid_pin, HIGH);
+  }
+
 }
 
 // Private Methods /////////////////////////////////////////////////////////////
