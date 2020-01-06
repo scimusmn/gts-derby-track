@@ -14,12 +14,14 @@ class Track
 {
     // user-accessible "public" interface
   public:
-    Track(int, int, int, SerialManager*); // solenoid pin, start sensor pin, finish sensor pin.
-    void update();
+    Track(int, int, int, int, SerialManager*); // solenoid pin, start sensor pin, finish sensor pin.
+    void watchFinish();
     void startRace();
+    bool is_Racing;
 
     // library-accessible "private" interface
   private:
+    int track_num;
     SerialManager* serialManager;
     int solenoid_pin;
     int start_beam_pin;
@@ -27,7 +29,6 @@ class Track
     unsigned long startTime;
     unsigned long endTime;
     long raceTime;
-    bool is_Racing;
 };
 
 #endif

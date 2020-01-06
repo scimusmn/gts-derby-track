@@ -4,11 +4,10 @@
 
 
 SerialManager serialManager;
-bool is_Racing = false;
-int solenoid_pins[] = {1,2};
+int solenoid_pins[] = {5,2};
 int start_pins[] = {1,2};
-int finish_pins[] = {1,2};
-Track track1(solenoid_pins[0], start_pins[0], finish_pins[0], &serialManager);
+int finish_pins[] = {6,2};
+Track track1(1,solenoid_pins[0], start_pins[0], finish_pins[0], &serialManager);
 
 
 void setup() {
@@ -25,6 +24,14 @@ void setup() {
 
 void loop() {
   serialManager.idle();
+
+  if (track1.is_Racing){
+    track1.watchFinish();
+  }
+
+  // track2.watchFinish();
+  // track3.watchFinish();
+
 
 }
 
@@ -44,7 +51,7 @@ void onParse(char* message, int value) {
     serialManager.sendJsonMessage("arduino-ready", 1);
   }
   else if (strcmp(message, "racing") == 0) {
-    is_Racing = true;
+    track1.is_Racing = true;
     startRace();
   }
 
@@ -70,5 +77,6 @@ void startRace() {
   tone(tone_pin, 700);
   delay(1000);
   noTone(tone_pin);
+  track1.startRace();
 
 }
