@@ -1,14 +1,20 @@
 #include "arduino-base/Libraries/SerialManager.h"
+#include "track.h"
+#define tone_pin 4
+
 
 SerialManager serialManager;
-
+bool is_Racing = false;
+int solenoid_pins[] = {1,2};
+int start_pins[] = {1,2};
+int finish_pins[] = {1,2};
+Track track1(solenoid_pins[0], start_pins[0], finish_pins[0], &serialManager);
 
 
 void setup() {
   long baudRate = 115200;
   // Enables/disables debug messaging from ArduinoJson
   boolean arduinoJsonDebug = false;
-  track1 = Track(solenoid_pins[0], start_pins[0], finish_pins[0]);
 
   // Ensure Serial Port is open and ready to communicate
   serialManager.setup(baudRate, [](char* message, char* value) {
@@ -33,13 +39,36 @@ void onParse(char* message, int value) {
 //    analogWrite(pwmOutputPin, value);
 //    serialManager.sendJsonMessage("pwm-set", value);
 //  }
-//  else if (strcmp(message, "pot-rotation") == 0) {
-//    serialManager.sendJsonMessage(message, analogInput1.readValue());
-//  }
+//
   if (strcmp(message, "wake-arduino") == 0 && value == 1) {
     serialManager.sendJsonMessage("arduino-ready", 1);
-  } else {
+  }
+  else if (strcmp(message, "racing") == 0) {
+    is_Racing = true;
+    startRace();
+  }
+
+  else {
     serialManager.sendJsonMessage("unknown-command", 1);
     serialManager.sendJsonMessage(message, value);
   }
+}
+
+void startRace() {
+  tone(tone_pin, 500);
+  delay(500);
+  noTone(tone_pin);
+  delay(500);
+  tone(tone_pin, 500);
+  delay(500);
+  noTone(tone_pin);
+  delay(500);
+  tone(tone_pin, 500);
+  delay(500);
+  noTone(tone_pin);
+  delay(500);
+  tone(tone_pin, 700);
+  delay(1000);
+  noTone(tone_pin);
+
 }
