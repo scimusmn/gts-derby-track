@@ -55,12 +55,6 @@ void onParse(char* message, int value) {
     serialManager.sendJsonMessage("arduino-ready", 1);
   }
 
-  else if (strcmp(message, "reset-race") == 0) {
-    track1.reset();
-    track2.reset();
-    track3.reset();
-
-  }
   else if (strcmp(message, "racing") == 0) {
     tone(tone_pin, 500);
     delay(300);

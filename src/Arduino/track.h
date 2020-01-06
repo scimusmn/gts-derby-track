@@ -17,7 +17,6 @@ class Track
     Track(int, int, int, int, SerialManager*); // solenoid pin, start sensor pin, finish sensor pin.
     void watchFinish();
     void startRace();
-    void reset();
     bool is_Racing;
 
     // library-accessible "private" interface
