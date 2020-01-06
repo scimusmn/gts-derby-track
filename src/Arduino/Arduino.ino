@@ -4,7 +4,7 @@
 
 
 SerialManager serialManager;
-int solenoid_pins[] = {5,5,5};
+int solenoid_pins[] = {A2,A3,A4};
 int start_pins[] = {8,9,10};
 int finish_pins[] = {6,6,6};
 Track track1(1,solenoid_pins[0], start_pins[0], finish_pins[0], &serialManager);
