@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Container } from 'reactstrap';
+import { Button, Container } from 'reactstrap';
 import propTypes from 'prop-types';
 import { ARDUINO_READY, WAKE_ARDUINO } from '../Arduino/arduino-base/ReactSerial/arduinoConstants';
 import IPC from '../Arduino/arduino-base/ReactSerial/IPCMessages';
@@ -9,6 +9,7 @@ import withSerialCommunication from '../Arduino/arduino-base/ReactSerial/SerialH
 // Serve the app from a subdirectory in production if needed.
 //
 
+const RACE = "{ 'message': 'racing', 'value': 1 }";
 class App extends Component {
   constructor(props) {
     super(props);
@@ -101,7 +102,12 @@ class App extends Component {
     return (
       <Fragment>
         <Container>
-          hi
+          <Button
+            color="primary"
+            onClick={() => this.sendClick(RACE)}
+          >
+          Race!
+          </Button>
         </Container>
       </Fragment>
     );
