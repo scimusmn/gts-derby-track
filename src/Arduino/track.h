@@ -3,7 +3,7 @@
   Joe Meyer created 12/26/2019 at the science museum of mn
 */
 #include "Arduino.h"
-#include "arduino-base/Libraries/SerialManager.h"
+#include "arduino-base/Libraries/SerialController.hpp"
 
 // ensure this library description is only included once
 #ifndef Track_h
@@ -14,7 +14,7 @@ class Track
 {
     // user-accessible "public" interface
   public:
-    Track(int, int, int, int, SerialManager*); // solenoid pin, start sensor pin, finish sensor pin.
+    Track(int, int, int, int, SerialController*); // solenoid pin, start sensor pin, finish sensor pin.
     void watchFinish();
     void startRace();
     bool is_Racing;
@@ -22,7 +22,7 @@ class Track
     // library-accessible "private" interface
   private:
     int track_num;
-    SerialManager* serialManager;
+    SerialController* serialController;
     int solenoid_pin;
     int start_beam_pin;
     int finish_beam_pin;

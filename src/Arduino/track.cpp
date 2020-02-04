@@ -4,9 +4,9 @@
 */
 #include "Arduino.h"
 #include "track.h"
-#include "arduino-base/Libraries/SerialManager.h"
+#include "arduino-base/Libraries/SerialController.hpp"
 
-Track::Track(int trackNum, int solenoid_p, int start_pin, int finish_pin, SerialManager* SerialM)
+Track::Track(int trackNum, int solenoid_p, int start_pin, int finish_pin, SerialController* SerialC)
 {
   track_num = trackNum;
   start_beam_pin = start_pin;
@@ -15,7 +15,7 @@ Track::Track(int trackNum, int solenoid_p, int start_pin, int finish_pin, Serial
   pinMode(solenoid_pin, OUTPUT);
   pinMode(start_pin, INPUT);
   pinMode(finish_pin, INPUT_PULLUP);
-  this->serialManager = SerialM;
+  this->serialController = SerialC;
 }
 
 // Public Methods //////////////////////////////////////////////////////////////
@@ -30,9 +30,9 @@ void Track::watchFinish(void)
 
   if (!digitalRead(finish_beam_pin)){
     is_Racing = false;
-    String message = "time_track_";
-    message += track_num;
-    serialManager->sendJsonMessage(message, raceTime);
+    char message = "time_track_" + track_num;
+    char value = "0" + raceTime;
+    serialController->sendMessage(message, value);
   }
 
 }
@@ -43,13 +43,14 @@ void Track::startRace(void)
     if (digitalRead(finish_beam_pin)){
       startTime = millis();
       is_Racing = true;
-      String message = "track_";
+      char message = "track_";
       message += track_num;
-      serialManager->sendJsonMessage(message, 1);
+      serialController->sendMessage(message, "1");
       digitalWrite(solenoid_pin, HIGH);
     }
     else{
-      serialManager->sendJsonMessage("finish_sensor_error", track_num);
+      char value = "0" + track_num;
+      serialController->sendMessage("finish_sensor_error", value);
     }
   }
 
