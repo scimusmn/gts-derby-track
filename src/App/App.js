@@ -17,6 +17,9 @@ class App extends Component {
       handshake: false,
       pingArduinoStatus: false,
       refreshPortCount: 0,
+      track1Time: 0,
+      track2Time: 0,
+      track3Time: 0,
     };
 
     this.onSerialData = this.onSerialData.bind(this);
@@ -33,6 +36,10 @@ class App extends Component {
   }
 
   onSerialData(data) {
+    let track1Time;
+    let track2Time;
+    let track3Time;
+
     const {
       handshake,
     } = this.state;
@@ -44,6 +51,20 @@ class App extends Component {
         pingArduinoStatus: false,
         refreshPortCount: 0,
       });
+    }
+    if (handshake) {
+      if (data.message === 'time_track_1') {
+        track1Time = data.value;
+        this.setState({ track1Time });
+      }
+      if (data.message === 'time_track_2') {
+        track2Time = data.value;
+        this.setState({ track2Time });
+      }
+      if (data.message === 'time_track_3') {
+        track3Time = data.value;
+        this.setState({ track3Time });
+      }
     }
   }
 
@@ -88,7 +109,7 @@ class App extends Component {
 
   render() {
     const {
-      handshake,
+      handshake, track1Time, track2Time, track3Time,
     } = this.state;
     if (!handshake) {
       return (
@@ -108,6 +129,18 @@ class App extends Component {
           >
           Race!
           </Button>
+          <p>
+            Track 1:
+            {track1Time}
+          </p>
+          <p>
+            Track 2:
+            {track2Time}
+          </p>
+          <p>
+            Track 3:
+            {track3Time}
+          </p>
         </Container>
       </Fragment>
     );
