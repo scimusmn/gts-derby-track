@@ -2,9 +2,7 @@
   Track.h - Track library for derby track, Gateway to Science
   Joe Meyer created 12/26/2019 at the science museum of mn
 */
-#include "Arduino.h"
 #include "track.h"
-#include "arduino-base/Libraries/SerialController.hpp"
 
 Track::Track(int trackNum, int solenoid_p, int start_pin, int finish_pin, SerialController* SerialC)
 {
@@ -19,6 +17,17 @@ Track::Track(int trackNum, int solenoid_p, int start_pin, int finish_pin, Serial
 }
 
 // Public Methods //////////////////////////////////////////////////////////////
+void Track::watchStart(void) {
+  bool start_beam = digitalRead(start_beam_pin);
+  if (start_beam != car_on_start){
+    String message = "track_" + track_num;
+    message += "_start";
+    char val[5];
+    snprintf(val,5,"%d",start_beam);
+    // serialController->sendMessage(message, val);
+    car_on_start = start_beam;
+  }
+}
 
 void Track::watchFinish(void)
 {
@@ -30,9 +39,8 @@ void Track::watchFinish(void)
 
   if (!digitalRead(finish_beam_pin)){
     is_Racing = false;
-    char message = "time_track_" + track_num;
-    char value = "0" + raceTime;
-    serialController->sendMessage(message, value);
+    String message = "time_track_" + track_num;
+    // serialController->sendMessage(message, raceTime);
   }
 
 }
@@ -43,14 +51,13 @@ void Track::startRace(void)
     if (digitalRead(finish_beam_pin)){
       startTime = millis();
       is_Racing = true;
-      char message = "track_";
+      String message = "track_";
       message += track_num;
-      serialController->sendMessage(message, "1");
+      // serialController->sendMessage(message, "1");
       digitalWrite(solenoid_pin, HIGH);
     }
     else{
-      char value = "0" + track_num;
-      serialController->sendMessage("finish_sensor_error", value);
+      // serialController->sendMessage("finish_sensor_error", track_num);
     }
   }
 

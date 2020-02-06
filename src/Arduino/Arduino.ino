@@ -35,44 +35,19 @@ void loop() {
 
 }
 
-void onParse(char* message, int value) {
-
-//  if (strcmp(message, "led") == 0) {
-//    // Turn-on led
-//    digitalWrite(ledPin, value);
-//  }
-//  else if (strcmp(message, "pwm-output") == 0 && value >= 0) {
-//    // Set pwm value to pwm pin
-//    analogWrite(pwmOutputPin, value);
-//    serialManager.sendJsonMessage("pwm-set", value);
-//  }
-//
-  if (strcmp(message, "wake-arduino") == 0 && value == 1) {
+void onParse(char* message, char* value) {
+  if (strcmp(message, "wake-arduino") == 0 && strcmp(value, "1") == 0) {
     serialController.sendMessage("arduino-ready", "1");
   }
 
   else if (strcmp(message, "racing") == 0) {
-    tone(tone_pin, 500);
-    delay(300);
-    noTone(tone_pin);
-    delay(300);
-    tone(tone_pin, 500);
-    delay(300);
-    noTone(tone_pin);
-    delay(300);
-    tone(tone_pin, 500);
-    delay(300);
-    noTone(tone_pin);
-    delay(300);
-    tone(tone_pin, 700);
-    delay(1000);
-    noTone(tone_pin);
     track1.startRace();
     track2.startRace();
     track3.startRace();
   }
 
   else {
+    // helpfully alert us if we've sent something wrong :)
     serialController.sendMessage("unknown-command", "1");
   }
 }
