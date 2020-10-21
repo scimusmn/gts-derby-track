@@ -1,3 +1,6 @@
+/* eslint linebreak-style: ["error", "windows"] */
+/* eslint-disable */
+
 import React, { Component, Fragment } from 'react';
 import { Button, Container } from 'reactstrap';
 import propTypes from 'prop-types';
@@ -126,20 +129,12 @@ class App extends Component {
           <Button
             color="primary"
             onClick={() => this.sendClick(RACE)}
-          >
-          Race!
-          </Button>
-          <p>
-            Track 1:
-            {track1Time}
+          >Race!</Button>
+          <p> Track 1: {track1Time}
           </p>
-          <p>
-            Track 2:
-            {track2Time}
+          <p>Track 2: {track2Time}
           </p>
-          <p>
-            Track 3:
-            {track3Time}
+          <p>Track 3: {track3Time}
           </p>
         </Container>
       </Fragment>
