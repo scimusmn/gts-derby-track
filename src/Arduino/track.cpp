@@ -2,6 +2,8 @@
   Track.h - Track library for derby track, Gateway to Science
   Joe Meyer created 12/26/2019 at the science museum of mn
 */
+#include "Arduino.h"
+#include "arduino-base/Libraries/SerialController.hpp"
 #include "track.h"
 
 Track::Track(int trackNum, int solenoid_p, int start_pin, int finish_pin, SerialController* SerialC)

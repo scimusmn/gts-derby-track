@@ -4,9 +4,11 @@
 
 
 SerialController serialController;
-int solenoid_pins[] = {A2,A3,A4};
-int start_pins[] = {8,9,10};
-int finish_pins[] = {6,6,6};
+int solenoid_pins[] = {6,6,6};
+int start_pins[] = {10,11,12};
+int finish_pins[] = {2,3,4};
+int start_btn = 8;
+int start_btn_led = 9;
 Track track1(1,solenoid_pins[0], start_pins[0], finish_pins[0], &serialController);
 Track track2(2,solenoid_pins[1], start_pins[1], finish_pins[1], &serialController);
 Track track3(3,solenoid_pins[2], start_pins[2], finish_pins[2], &serialController);

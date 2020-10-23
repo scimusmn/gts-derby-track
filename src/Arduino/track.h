@@ -3,12 +3,12 @@
   Joe Meyer created 12/26/2019 at the science museum of mn
 */
 
+#include "Arduino.h"
+#include "arduino-base/Libraries/SerialController.hpp"
+
 // ensure this library description is only included once
 #ifndef Track_h
 #define Track_h
-
-#include "Arduino.h"
-#include "arduino-base/Libraries/SerialController.hpp"
 
 
 // library interface description
