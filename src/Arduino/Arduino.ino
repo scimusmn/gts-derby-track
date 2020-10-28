@@ -1,20 +1,21 @@
 #include "arduino-base/Libraries/SerialController.hpp"
 #include "track.h"
-#define tone_pin 4
 
 SerialController serialController;
-int solenoid_pins[] = {6, 6, 6};
+const int solenoid_pin = 6;
 int start_pins[] = {10, 11, 12};
 int finish_pins[] = {2, 3, 4};
 int start_btn = 8;
 int start_btn_led = 9;
-Track track1(1, solenoid_pins[0], start_pins[0], finish_pins[0], &serialController);
-Track track2(2, solenoid_pins[1], start_pins[1], finish_pins[1], &serialController);
-Track track3(3, solenoid_pins[2], start_pins[2], finish_pins[2], &serialController);
+unsigned long solenoid_time = 0;
+Track track1(1, start_pins[0], finish_pins[0], &serialController);
+Track track2(2, start_pins[1], finish_pins[1], &serialController);
+Track track3(3, start_pins[2], finish_pins[2], &serialController);
 
 void setup()
 {
   long baudRate = 115200;
+  pinMode(solenoid_pin, OUTPUT);
 
   // Ensure Serial Port is open and ready to communicate
   serialController.setup(baudRate, &onParse);
@@ -24,6 +25,10 @@ void loop()
 {
   // update SerialController and check for new data
   serialController.update();
+
+  //  if (raceTime > 1000){
+  //    digitalWrite(solenoid_pin, LOW);
+  //  }
 
   if (track1.is_Racing)
   {
@@ -48,9 +53,13 @@ void onParse(char *message, char *value)
 
   else if (strcmp(message, "racing") == 0)
   {
-    track1.startRace();
-    track2.startRace();
-    track3.startRace();
+    digitalWrite(solenoid_pin, HIGH);
+    solenoid_time = millis();
+    track1.startRace(solenoid_time);
+    track2.startRace(solenoid_time);
+    track3.startRace(solenoid_time);
+    delay(500);
+    digitalWrite(solenoid_pin, LOW);
   }
 
   else

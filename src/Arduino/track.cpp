@@ -6,13 +6,11 @@
 #include "arduino-base/Libraries/SerialController.hpp"
 #include "track.h"
 
-Track::Track(int trackNum, int solenoid_p, int start_pin, int finish_pin, SerialController* SerialC)
+Track::Track(int trackNum, int start_pin, int finish_pin, SerialController* SerialC)
 {
   track_num = trackNum;
   start_beam_pin = start_pin;
   finish_beam_pin = finish_pin;
-  solenoid_pin = solenoid_p;
-  pinMode(solenoid_pin, OUTPUT);
   pinMode(start_pin, INPUT);
   pinMode(finish_pin, INPUT_PULLUP);
   this->serialController = SerialC;
@@ -35,10 +33,6 @@ void Track::watchFinish(void)
 {
   raceTime = millis() - startTime;
 
-  if (raceTime > 1000){
-    digitalWrite(solenoid_pin, LOW);
-  }
-
   if (!digitalRead(finish_beam_pin)){
     is_Racing = false;
     String message = "time_track_" + track_num;
@@ -47,16 +41,15 @@ void Track::watchFinish(void)
 
 }
 
-void Track::startRace(void)
+void Track::startRace(unsigned long solenoidTime)
 {
   if (digitalRead(start_beam_pin)){
     if (digitalRead(finish_beam_pin)){
-      startTime = millis();
+      startTime = solenoidTime;
       is_Racing = true;
       String message = "track_";
       message += track_num;
       // serialController->sendMessage(message, "1");
-      digitalWrite(solenoid_pin, HIGH);
     }
     else{
       // serialController->sendMessage("finish_sensor_error", track_num);
