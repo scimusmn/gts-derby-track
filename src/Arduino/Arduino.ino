@@ -26,6 +26,10 @@ void loop()
   // update SerialController and check for new data
   serialController.update();
 
+  track1.watchStart();
+  track2.watchStart();
+  track3.watchStart();
+
   //  if (raceTime > 1000){
   //    digitalWrite(solenoid_pin, LOW);
   //  }

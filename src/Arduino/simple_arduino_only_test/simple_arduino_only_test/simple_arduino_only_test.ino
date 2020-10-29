@@ -10,7 +10,7 @@ unsigned long start_time = 0;
 
 void setup()
 {
-  Serial.begin(9600);
+  Serial.begin(115200);
   // put your setup code here, to run once:
   pinMode(solenoid_pin, OUTPUT);
   digitalWrite(solenoid_pin, LOW);
