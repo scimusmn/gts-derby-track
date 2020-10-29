@@ -10,28 +10,24 @@
 #ifndef Track_h
 #define Track_h
 
-
 // library interface description
 class Track
 {
-    // user-accessible "public" interface
-  public:
-    Track(int, int, int, SerialController*); // solenoid pin, start sensor pin, finish sensor pin.
-    void watchStart();
-    void watchFinish();
-    void startRace(unsigned long);
-    bool is_Racing;
+  // user-accessible "public" interface
+public:
+  Track(int, int, SerialController *); // track number, finish sensor pin.
+  void watchFinish();
+  void startRace(unsigned long);
+  bool is_Racing;
 
-    // library-accessible "private" interface
-  private:
-    int track_num;
-    SerialController* serialController;
-    bool car_on_start;
-    int start_beam_pin;
-    int finish_beam_pin;
-    unsigned long startTime;
-    unsigned long endTime;
-    long raceTime;
+  // library-accessible "private" interface
+private:
+  int track_num;
+  SerialController *serialController;
+  int finish_beam_pin;
+  unsigned long startTime;
+  unsigned long endTime;
+  long raceTime;
 };
 
 #endif
