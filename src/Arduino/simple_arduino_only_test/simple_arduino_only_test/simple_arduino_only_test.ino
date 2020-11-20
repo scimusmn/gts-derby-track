@@ -1,3 +1,12 @@
+// MARBLE DERBY TRACK PINS
+//int solenoid_pin = 10;
+//bool racing[] = {false, false, false};
+//int start_pins[] = {6, 7, 8};
+//int finish_pins[] = {2, 3, 4};
+//int start_btn = 12;
+//int start_btn_led = 13;
+
+// 40Ft EXIBIT PINS
 int solenoid_pin = 6;
 int led_pin = 13;
 bool racing[] = {false, false, false};
