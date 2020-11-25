@@ -1,12 +1,19 @@
 #include "arduino-base/Libraries/SerialController.hpp"
 #include "arduino-base/Libraries/Button.h"
 
-//pin assignments EXHIBIT
-const int solenoid_pin = 6;
-const int start_pins[] = {12, 11, 10};
+//pin assignments 40ft EXHIBIT
+// const int solenoid_pin = 6;
+// const int start_pins[] = {12, 11, 10};
+// const int finish_pins[] = {2, 3, 4};
+// const int start_btn_pin = 8;
+// const int start_btn_led = 9;
+
+// pin assignments MINI MARBLE TRACK
+const int solenoid_pin = 10;
+const int start_pins[] = {6, 7, 8};
 const int finish_pins[] = {2, 3, 4};
-const int start_btn_pin = 8;
-const int start_btn_led = 9;
+const int start_btn_pin = 12;
+const int start_btn_led = 13;
 
 SerialController serialController;
 Button start_btn;
