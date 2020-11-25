@@ -91,19 +91,20 @@ void onParse(char *message, char *value)
   else if (strcmp(message, "start_button_lit") == 0)
   {
     if (atoi(value) == 0)
-      digitalWrite(start_btn_led, LOW);
+      digitalWrite(start_btn_led, LOW); //Turn the button LED OFF
     if (atoi(value) == 1)
-      digitalWrite(start_btn_led, HIGH);
+      digitalWrite(start_btn_led, HIGH); //Turn the button LED ON.
   }
 
   else if (strcmp(message, "retract-solenoids") == 0)
   {
     if (atoi(value) == 0)
-      digitalWrite(solenoid_pin, LOW);
+      digitalWrite(solenoid_pin, LOW); //solenoids spring up, stopping cars.
     if (atoi(value) == 1)
-      digitalWrite(solenoid_pin, HIGH);
+      digitalWrite(solenoid_pin, HIGH); //solenoids retract, releasing the cars.
   }
 
+  //spit out all states on the racetrack.
   else if (strcmp(message, "get-beam-states") == 0)
   {
     serialController.sendMessage("track_1_start", track1_start.state);
