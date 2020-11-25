@@ -11,12 +11,10 @@ Button track2_finish;
 Button track3_finish;
 
 const int solenoid_pin = 6;
-int start_pins[] = {12, 11, 10};
-int finish_pins[] = {2, 3, 4};
-int start_btn_pin = 8;
-int start_btn_led = 9;
-bool racing = false;
-unsigned long currentMillis = 0, solenoid_time = 0;
+const int start_pins[] = {12, 11, 10};
+const int finish_pins[] = {2, 3, 4};
+const int start_btn_pin = 8;
+const int start_btn_led = 9;
 
 void setup()
 {
@@ -24,44 +22,35 @@ void setup()
   pinMode(solenoid_pin, OUTPUT);
   pinMode(start_btn_led, OUTPUT);
 
+  //start beam break sensors
   track1_start.setup(start_pins[0], [](int state) {
-    serialController.sendMessage("track_1_car", state);
+    serialController.sendMessage("track_1_start", state);
   });
   track2_start.setup(start_pins[1], [](int state) {
-    serialController.sendMessage("track_2_car", state);
+    serialController.sendMessage("track_2_start", state);
   });
   track3_start.setup(start_pins[2], [](int state) {
-    serialController.sendMessage("track_3_car", state);
+    serialController.sendMessage("track_3_start", state);
   });
-
+  //finish beam break sensors
   track1_finish.setup(finish_pins[0], [](int state) {
-    if (state == 1)
-    {
-      serialController.sendMessage("track_1_time", currentMillis - solenoid_time);
-    }
+    serialController.sendMessage("track_1_finish", state);
   });
   track2_finish.setup(finish_pins[1], [](int state) {
-    if (state == 1)
-    {
-      serialController.sendMessage("track_2_time", currentMillis - solenoid_time);
-    }
+    serialController.sendMessage("track_2_finish", state);
   });
   track3_finish.setup(finish_pins[2], [](int state) {
-    if (state == 1)
-    {
-      serialController.sendMessage("track_3_time", currentMillis - solenoid_time);
-    }
+    serialController.sendMessage("track_3_finish", state);
   });
 
   start_btn.setup(start_btn_pin, [](int state) {
     if (state == 1)
     {
       serialController.sendMessage("start-button-pressed", "1");
-      onParse("racing", 1); //TODO remove once on stele
     }
   });
 
-  track1_finish.debounce = 2;
+  track1_finish.debounce = 2; //may need adjustmets. Default 20ms doesn't work.
   track2_finish.debounce = 2;
   track3_finish.debounce = 2;
 
@@ -72,28 +61,16 @@ void setup()
 
 void loop()
 {
-  currentMillis = millis();
   // update SerialController and check for new data
   serialController.update();
 
-  //  if (raceTime > 1000){
-  //    digitalWrite(solenoid_pin, LOW);
-  //  }
-
-  if (racing)
-  {
-    track1_finish.update();
-    track2_finish.update();
-    track3_finish.update();
-  }
-
-  if (!racing)
-  {
-    start_btn.update();
-    track1_start.update();
-    track2_start.update();
-    track3_start.update();
-  }
+  track1_finish.update();
+  track2_finish.update();
+  track3_finish.update();
+  start_btn.update();
+  track1_start.update();
+  track2_start.update();
+  track3_start.update();
 }
 
 void onParse(char *message, char *value)
@@ -103,20 +80,25 @@ void onParse(char *message, char *value)
     serialController.sendMessage("arduino-ready", "1");
   }
 
-  else if (strcmp(message, "racing") == 0)
+  else if (strcmp(message, "start_button_lit") == 0)
   {
-    digitalWrite(start_btn_led, LOW);
-    digitalWrite(solenoid_pin, HIGH);
-    solenoid_time = millis();
-    racing = true;
-    delay(500);
-    digitalWrite(solenoid_pin, LOW);
+    if (atoi(value) == 0)
+      digitalWrite(start_btn_led, LOW);
+    if (atoi(value) == 1)
+      digitalWrite(start_btn_led, HIGH);
   }
 
-  else if (strcmp(message, "reset") == 0)
+  else if (strcmp(message, "retract-solenoids") == 0)
   {
-    digitalWrite(start_btn_led, HIGH);
-    racing = false;
+    if (atoi(value) == 0)
+      digitalWrite(solenoid_pin, LOW);
+    if (atoi(value) == 1)
+      digitalWrite(solenoid_pin, HIGH);
+  }
+
+  else if (strcmp(message, "get-beam-states") == 0)
+  {
+    //TODO
   }
   else
   {
