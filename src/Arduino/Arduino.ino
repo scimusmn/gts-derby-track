@@ -1,6 +1,13 @@
 #include "arduino-base/Libraries/SerialController.hpp"
 #include "arduino-base/Libraries/Button.h"
 
+//pin assignments EXHIBIT
+const int solenoid_pin = 6;
+const int start_pins[] = {12, 11, 10};
+const int finish_pins[] = {2, 3, 4};
+const int start_btn_pin = 8;
+const int start_btn_led = 9;
+
 SerialController serialController;
 Button start_btn;
 Button track1_start;
@@ -9,12 +16,6 @@ Button track3_start;
 Button track1_finish;
 Button track2_finish;
 Button track3_finish;
-
-const int solenoid_pin = 6;
-const int start_pins[] = {12, 11, 10};
-const int finish_pins[] = {2, 3, 4};
-const int start_btn_pin = 8;
-const int start_btn_led = 9;
 
 void setup()
 {
@@ -98,7 +99,13 @@ void onParse(char *message, char *value)
 
   else if (strcmp(message, "get-beam-states") == 0)
   {
-    //TODO
+    serialController.sendMessage("track_1_start", track1_start.state);
+    serialController.sendMessage("track_2_start", track2_start.state);
+    serialController.sendMessage("track_3_start", track3_start.state);
+
+    serialController.sendMessage("track_1_finish", track1_finish.state);
+    serialController.sendMessage("track_2_finish", track2_finish.state);
+    serialController.sendMessage("track_3_finish", track3_finish.state);
   }
   else
   {
