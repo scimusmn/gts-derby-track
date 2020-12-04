@@ -2,9 +2,9 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { Button, Container } from 'reactstrap';
 
-import { WAKE_ARDUINO } from '@Arduino/arduino-base/ReactSerial/arduinoConstants';
-import IPC from '@Arduino/arduino-base/ReactSerial/IPCMessages';
-import withSerialCommunication from '@Arduino/arduino-base/ReactSerial/SerialHOC';
+import { WAKE_ARDUINO } from '@arduino/arduino-base/ReactSerial/ArduinoConstants';
+import IPC from '@arduino/arduino-base/ReactSerial/IPCMessages';
+import withSerialCommunication from '@arduino/arduino-base/ReactSerial/SerialHOC';
 
 const RACE = "{ 'message': 'racing', 'value': 1 }";
 
