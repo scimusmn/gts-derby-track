@@ -1,7 +1,13 @@
-/**
- * Implement Gatsby's Browser APIs in this file.
- *
- * See: https://www.gatsbyjs.org/docs/browser-apis/
- */
+/* eslint-disable import/prefer-default-export */
+// Don't require a default export. Gatsby's API can't support it here.
+import PropTypes from 'prop-types';
+import React from 'react';
 
-// You can delete this file if you're not using it
+import 'bootstrap/dist/css/bootstrap.min.css';
+import '@styles/base.scss';
+
+export const wrapRootElement = ({ element }) => <>{element}</>;
+
+wrapRootElement.propTypes = {
+  element: PropTypes.element.isRequired,
+};

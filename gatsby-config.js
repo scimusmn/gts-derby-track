@@ -1,15 +1,20 @@
+require('dotenv').config({
+  path: `.env.${process.env.NODE_ENV}`,
+});
+
 module.exports = {
   siteMetadata: {
-    title: 'Science Museum of Minnesota main website.',
-    description: 'Client application for smm.org',
-    author: '@sciencemuseummn',
+    author: '@scimusmn',
+    title: 'derby-track',
   },
   plugins: [
+    'gatsby-plugin-sharp',
+    'gatsby-transformer-sharp',
     'gatsby-plugin-eslint',
     {
       resolve: 'gatsby-plugin-sass',
       options: {
-        data: '@import src/styles/variables',
+        data: '@import "src/styles/variables";',
         includePaths: [
           'src/components',
         ],
@@ -23,8 +28,6 @@ module.exports = {
         path: `${__dirname}/src/images`,
       },
     },
-    'gatsby-transformer-sharp',
-    'gatsby-plugin-sharp',
     {
       resolve: 'gatsby-plugin-manifest',
       options: {
@@ -37,8 +40,5 @@ module.exports = {
         icon: 'src/images/smm.png',
       },
     },
-    // this (optional) plugin enables Progressive Web App + Offline functionality
-    // To learn more, visit: https://gatsby.dev/offline
-    // `gatsby-plugin-offline`,
   ],
 };
