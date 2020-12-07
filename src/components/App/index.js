@@ -5,6 +5,7 @@ import { Button, Container } from 'reactstrap';
 import { WAKE_ARDUINO } from '@arduino/arduino-base/ReactSerial/ArduinoConstants';
 import IPC from '@arduino/arduino-base/ReactSerial/IPCMessages';
 import withSerialCommunication from '@arduino/arduino-base/ReactSerial/SerialHOC';
+import AttractScreen from '@components/AttractScreen';
 
 const RACE = "{ 'message': 'racing', 'value': 1 }";
 
@@ -13,10 +14,11 @@ const App = (props) => {
     sendData, setOnDataCallback, startIpcCommunication, stopIpcCommunication,
   } = props;
 
-  const [serialData, setSerialData] = useState({ message: '', value: '' });
+  const [active, setActive] = useState(false);
   const [handshake, setHandshake] = useState(false);
   const [pingArduinoStatus, setPingArduinoStatus] = useState(false);
   const [refreshPortCount, setRefreshPortCount] = useState(0);
+  const [serialData, setSerialData] = useState({ message: '', value: '' });
   const [track1Start, setTrack1Start] = useState(false);
   const [track2Start, setTrack2Start] = useState(false);
   const [track3Start, setTrack3Start] = useState(false);
@@ -87,6 +89,8 @@ const App = (props) => {
   }, [serialData]);
 
   if (!handshake) return <p>no handshake</p>;
+
+  if (!active) return <AttractScreen callback={() => setActive(true)} />;
 
   return (
     <Container className="text-light">

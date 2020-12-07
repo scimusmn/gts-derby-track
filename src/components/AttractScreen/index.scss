@@ -1,0 +1,49 @@
+.attract-btn,
+.attract-btn:active,
+.attract-btn:focus {
+  background: transparent !important;
+  background-color: transparent !important;
+  border: 0;
+  box-shadow: none !important;
+  height: 100vh;
+  left: 0;
+  outline: 0;
+  padding: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  z-index: 5000;
+}
+
+.attract-btn:active {
+  width: 290px;
+}
+
+.attract-btn img {
+  height: 400px;
+}
+
+#attractContainer {
+  height: 100vh;
+  width: 400px;
+}
+
+.x {
+  animation: x 5s linear infinite alternate;
+}
+
+.y {
+  animation: y 7s linear infinite alternate;
+}
+
+@keyframes x {
+  100% {
+    transform: translateX(calc(100vw - 400px));
+  }
+}
+
+@keyframes y {
+  100% {
+    transform: translateY(calc(100vh - 400px));
+  }
+}
