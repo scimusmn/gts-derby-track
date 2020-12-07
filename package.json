@@ -54,12 +54,12 @@
     "clean": "gatsby clean",
     "depcheck": "node -r @babel/register scripts/depcheck.js",
     "dev": "gatsby develop",
-    "develop": "gatsby develop",
+    "develop": "gatsby develop --port 3000",
     "install:arduino-base": "node scripts/install-arduino-base.js",
     "lint": "npm-run-all lint:*",
     "lint:code": "node_modules/.bin/eslint .",
     "lint:style": "node_modules/.bin/stylelint \"**/*.*css\"",
-    "serve": "gatsby serve",
+    "serve": "gatsby serve --port 3000",
     "start": "npm run develop"
   }
 }
