@@ -13,6 +13,7 @@ const App = (props) => {
     sendData, setOnDataCallback, startIpcCommunication, stopIpcCommunication,
   } = props;
 
+  const [serialData, setSerialData] = useState({ message: '', value: '' });
   const [handshake, setHandshake] = useState(false);
   const [pingArduinoStatus, setPingArduinoStatus] = useState(false);
   const [refreshPortCount, setRefreshPortCount] = useState(0);
@@ -23,23 +24,11 @@ const App = (props) => {
   const [track2Time, setTrack2Time] = useState(0);
   const [track3Time, setTrack3Time] = useState(0);
 
-  const onSerialData = (data) => {
-    if (data.message === 'arduino-ready') {
-      if (!handshake) setHandshake(true);
+  const onSerialData = (data, setData) => {
+    const message = Object.keys(data)[0];
+    const value = Object.values(data)[0];
 
-      setPingArduinoStatus(false);
-      setRefreshPortCount(0);
-    }
-
-    if (handshake) {
-      if (data.message === 'track_1_start') setTrack1Start(parseInt(data.value, 10));
-      if (data.message === 'track_2_start') setTrack2Start(parseInt(data.value, 10));
-      if (data.message === 'track_3_start') setTrack3Start(parseInt(data.value, 10));
-
-      if (data.message === 'time_track_1') setTrack1Time(data.value);
-      if (data.message === 'time_track_2') setTrack2Time(data.value);
-      if (data.message === 'time_track_3') setTrack3Time(data.value);
-    }
+    setData({ message, value });
   };
 
   const sendMessage = (msg) => {
@@ -74,11 +63,28 @@ const App = (props) => {
   };
 
   useEffect(() => {
-    setOnDataCallback(onSerialData);
-
-    // document.addEventListener('keydown', this.handleReset);
+    setOnDataCallback((data) => onSerialData(data, setSerialData));
     pingArduino();
   }, []);
+
+  useEffect(() => {
+    if (serialData.message === 'arduino-ready' && serialData.value) {
+      if (!handshake) setHandshake(true);
+
+      setPingArduinoStatus(false);
+      setRefreshPortCount(0);
+    }
+
+    if (handshake) {
+      if (serialData.message === 'track_1_start') setTrack1Start(parseInt(serialData.value, 10));
+      if (serialData.message === 'track_2_start') setTrack2Start(parseInt(serialData.value, 10));
+      if (serialData.message === 'track_3_start') setTrack3Start(parseInt(serialData.value, 10));
+
+      if (serialData.message === 'time_track_1') setTrack1Time(serialData.value);
+      if (serialData.message === 'time_track_2') setTrack2Time(serialData.value);
+      if (serialData.message === 'time_track_3') setTrack3Time(serialData.value);
+    }
+  }, [serialData]);
 
   if (!handshake) return <p>no handshake</p>;
 

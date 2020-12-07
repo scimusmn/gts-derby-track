@@ -1,9 +1,4 @@
-import React from 'react';
+import { navigate } from 'gatsby';
 
-import NoMatch from '@components/NoMatch';
-
-const NotFoundPage = () => (
-  <NoMatch />
-);
-
+const NotFoundPage = () => navigate('/');
 export default NotFoundPage;
