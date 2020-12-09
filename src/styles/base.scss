@@ -1,3 +1,8 @@
+@font-face {
+  font-family: 'DigitalDisplay';
+  src: url('./fonts/DigitalDisplay_Font/DigitalDisplay.ttf') format('ttf');
+}
+
 html,
 body {
   height: 100%;
@@ -5,6 +10,8 @@ body {
 }
 
 body {
+  background: $background;
+  background-color: $background;
   font-family: $smm-default-font;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
