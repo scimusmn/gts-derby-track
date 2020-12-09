@@ -1,0 +1,9 @@
+.lane {
+  border: 2px solid rgb(140, 140, 140);
+  opacity: 0.5;
+  width: 100%;
+
+  &.active {
+    opacity: 1;
+  }
+}

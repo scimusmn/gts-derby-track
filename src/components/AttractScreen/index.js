@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import SMM from '../../images/smm.png';
+import Bubble from '@images/409.MA.1 SplashScreenBubble_2020_RG.png';
 
 import './index.scss';
 
@@ -18,7 +18,7 @@ const AttractScreen = (props) => {
         <img
           alt="Start Button"
           className="y"
-          src={SMM}
+          src={Bubble}
         />
       </div>
     </button>

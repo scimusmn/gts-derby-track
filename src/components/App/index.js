@@ -1,24 +1,37 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
-import { Button, Container } from 'reactstrap';
+import { Col, Container, Row } from 'reactstrap';
 
 import { WAKE_ARDUINO } from '@arduino/arduino-base/ReactSerial/ArduinoConstants';
 import IPC from '@arduino/arduino-base/ReactSerial/IPCMessages';
 import withSerialCommunication from '@arduino/arduino-base/ReactSerial/SerialHOC';
 import AttractScreen from '@components/AttractScreen';
+import Audio from '@components/Audio';
+import Lane from '@components/Lane';
+import Stoplight from '@components/Stoplight';
 
-const RACE = "{ 'message': 'racing', 'value': 1 }";
+const MESSAGE_GET_BEAMS = '{get-beam-states:1}';
+const MESSAGE_START_RACE = "{ 'message': 'racing', 'value': 1 }";
+
+function RenderStoplight(status) {
+  return (<Stoplight status={status} />);
+}
 
 const App = (props) => {
   const {
     sendData, setOnDataCallback, startIpcCommunication, stopIpcCommunication,
   } = props;
 
-  const [active, setActive] = useState(false);
+  const [countdown, setCountdown] = useState(0);
+  const [countdownInterval, setCountdownInterval] = useState(null);
   const [handshake, setHandshake] = useState(false);
+  const [isAppIdle, setIsAppIdle] = useState(true);
+  const [isCountingDown, setIsCountingDown] = useState(false);
+  const [isRacing, setIsRacing] = useState(false);
   const [pingArduinoStatus, setPingArduinoStatus] = useState(false);
   const [refreshPortCount, setRefreshPortCount] = useState(0);
   const [serialData, setSerialData] = useState({ message: '', value: '' });
+  const [stoplightComponent, setStoplightComponent] = useState(null);
   const [track1Start, setTrack1Start] = useState(false);
   const [track2Start, setTrack2Start] = useState(false);
   const [track3Start, setTrack3Start] = useState(false);
@@ -64,6 +77,18 @@ const App = (props) => {
     setTimeout(() => pingArduino(), 5000);
   };
 
+  /** ***************** App functions ******************* */
+
+  const cleanupCountdown = () => {
+    clearInterval(countdownInterval);
+    setCountdownInterval(null);
+    setCountdown(0);
+    setIsRacing(true);
+    sendMessage(MESSAGE_START_RACE);
+  };
+
+  /** ***************** useEffect hooks ******************* */
+
   useEffect(() => {
     setOnDataCallback((data) => onSerialData(data, setSerialData));
     pingArduino();
@@ -78,45 +103,79 @@ const App = (props) => {
     }
 
     if (handshake) {
-      if (serialData.message === 'track_1_start') setTrack1Start(parseInt(serialData.value, 10));
-      if (serialData.message === 'track_2_start') setTrack2Start(parseInt(serialData.value, 10));
-      if (serialData.message === 'track_3_start') setTrack3Start(parseInt(serialData.value, 10));
+      if (serialData.message === 'start-button-pressed'
+        && countdown === 0 && !isCountingDown
+      ) {
+        setIsCountingDown(true);
+        setCountdownInterval(setInterval(() => {
+          setCountdown((prevState) => prevState + 1);
+        }, 1000));
+      }
 
-      if (serialData.message === 'time_track_1') setTrack1Time(serialData.value);
-      if (serialData.message === 'time_track_2') setTrack2Time(serialData.value);
-      if (serialData.message === 'time_track_3') setTrack3Time(serialData.value);
+      if (serialData.message === 'track-1-start') setTrack1Start(serialData.value === '1');
+      if (serialData.message === 'track-2-start') setTrack2Start(serialData.value === '1');
+      if (serialData.message === 'track-3-start') setTrack3Start(serialData.value === '1');
+
+      if (serialData.message === 'time-track-1') setTrack1Time(serialData.value);
+      if (serialData.message === 'time-track-2') setTrack2Time(serialData.value);
+      if (serialData.message === 'time-track-3') setTrack3Time(serialData.value);
     }
   }, [serialData]);
 
-  if (!handshake) return <p>no handshake</p>;
+  useEffect(() => {
+    if (countdown > 2) cleanupCountdown();
+    setStoplightComponent(RenderStoplight(countdown));
+  }, [countdown]);
 
-  if (!active) return <AttractScreen callback={() => setActive(true)} />;
+  useEffect(() => {
+    if (!isAppIdle) sendMessage(MESSAGE_GET_BEAMS);
+  }, [isAppIdle]);
+
+  if (!handshake) return <p>no handshake</p>;
+  if (isAppIdle) return <AttractScreen callback={() => setIsAppIdle(false)} />;
 
   return (
-    <Container className="text-light">
-      <Button
-        className="d-none"
-        color="primary"
-        onClick={() => sendMessage(RACE)}
-      >
-        Race!
-      </Button>
-      <p className={(track1Start) ? 'bg-primary' : 'bg-info'}>
-        Track 1:
-        {' '}
-        {track1Time}
-      </p>
-      <p className={(track2Start) ? 'bg-primary' : 'bg-info'}>
-        Track 2:
-        {' '}
-        {track2Time}
-      </p>
-      <p className={(track3Start) ? 'bg-primary' : 'bg-info'}>
-        Track 3:
-        {' '}
-        {track3Time}
-      </p>
-    </Container>
+    <>
+      <Audio trigger={(countdown)} />
+      <Container className="app p-0" fluid>
+        <Row className="no-gutters">
+          <Col md={2}>
+            HI
+          </Col>
+          <Col className="text-light" md={8}>
+            <Row className="no-gutters">
+              <Col>
+                <Lane
+                  active={track1Start}
+                  isRacing={isRacing}
+                  laneNumber={1}
+                  time={track1Time}
+                />
+              </Col>
+              <Col>
+                <Lane
+                  active={track2Start}
+                  isRacing={isRacing}
+                  laneNumber={2}
+                  time={track2Time}
+                />
+              </Col>
+              <Col>
+                <Lane
+                  active={track3Start}
+                  isRacing={isRacing}
+                  laneNumber={3}
+                  time={track3Time}
+                />
+              </Col>
+            </Row>
+          </Col>
+          <Col md={2}>
+            {stoplightComponent}
+          </Col>
+        </Row>
+      </Container>
+    </>
   );
 };
 

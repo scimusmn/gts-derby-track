@@ -1,0 +1,19 @@
+.timer {
+  background-color: #222;
+  color: grey;
+  font-family: 'DigitalDisplay', monospace;
+  font-size: 18px;
+  font-weight: bold;
+  height: 100px;
+
+  h1 {
+    position: absolute;
+    text-align: center;
+    top: 50%;
+    width: 100%;
+  }
+
+  .time {
+    color: red;
+  }
+}
