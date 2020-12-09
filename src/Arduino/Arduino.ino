@@ -24,6 +24,10 @@ Button track1_finish;
 Button track2_finish;
 Button track3_finish;
 
+boolean track1_start_state = false;
+boolean track2_start_state = false;
+boolean track3_start_state = false;
+
 void setup()
 {
   long baudRate = 115200;
@@ -32,23 +36,26 @@ void setup()
 
   //start beam break sensors
   track1_start.setup(start_pins[0], [](int state) {
-    serialController.sendMessage("track_1_start", state);
+    serialController.sendMessage("track-1-start", state);
+    track1_start_state = state;
   });
   track2_start.setup(start_pins[1], [](int state) {
-    serialController.sendMessage("track_2_start", state);
+    serialController.sendMessage("track-2-start", state);
+    track2_start_state = state;
   });
   track3_start.setup(start_pins[2], [](int state) {
-    serialController.sendMessage("track_3_start", state);
+    serialController.sendMessage("track-3-start", state);
+    track3_start_state = state;
   });
   //finish beam break sensors
   track1_finish.setup(finish_pins[0], [](int state) {
-    serialController.sendMessage("track_1_finish", state);
+    serialController.sendMessage("track-1-finish", state);
   });
   track2_finish.setup(finish_pins[1], [](int state) {
-    serialController.sendMessage("track_2_finish", state);
+    serialController.sendMessage("track-2-finish", state);
   });
   track3_finish.setup(finish_pins[2], [](int state) {
-    serialController.sendMessage("track_3_finish", state);
+    serialController.sendMessage("track-3-finish", state);
   });
 
   start_btn.setup(start_btn_pin, [](int state) {
@@ -88,7 +95,7 @@ void onParse(char *message, char *value)
     serialController.sendMessage("arduino-ready", "1");
   }
 
-  else if (strcmp(message, "start_button_lit") == 0)
+  else if (strcmp(message, "start-button-lit") == 0)
   {
     if (atoi(value) == 0)
       digitalWrite(start_btn_led, LOW); //Turn the button LED OFF
@@ -107,13 +114,13 @@ void onParse(char *message, char *value)
   //spit out all states on the racetrack.
   else if (strcmp(message, "get-beam-states") == 0)
   {
-    serialController.sendMessage("track_1_start", track1_start.state);
-    serialController.sendMessage("track_2_start", track2_start.state);
-    serialController.sendMessage("track_3_start", track3_start.state);
+    serialController.sendMessage("track-1-start", track1_start_state);
+    serialController.sendMessage("track-2-start", track2_start_state);
+    serialController.sendMessage("track-3-start", track3_start_state);
 
-    serialController.sendMessage("track_1_finish", track1_finish.state);
-    serialController.sendMessage("track_2_finish", track2_finish.state);
-    serialController.sendMessage("track_3_finish", track3_finish.state);
+    serialController.sendMessage("track-1-finish", track1_finish.state);
+    serialController.sendMessage("track-2-finish", track2_finish.state);
+    serialController.sendMessage("track-3-finish", track3_finish.state);
   }
   else
   {
