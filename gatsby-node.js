@@ -6,6 +6,7 @@ exports.onCreateWebpackConfig = ({ actions }) => {
       alias: {
         '@arduino': path.resolve(__dirname, './src/Arduino'),
         '@components': path.resolve(__dirname, './src/components'),
+        '@images': path.resolve(__dirname, './src/images'),
         '@styles': path.resolve(__dirname, './src/styles'),
       },
     },
