@@ -1,6 +1,28 @@
 .lane-container {
   padding: 52.5px 0;
 
+  .timer {
+    color: grey;
+    height: 100px;
+    position: absolute;
+    width: 100%;
+
+    span {
+      color: red;
+      font-family: 'DigitalDisplay', monospace;
+      font-size: 6.1em;
+      font-variant-numeric: tabular-nums;
+      font-weight: bold;
+      left: 50%;
+      letter-spacing: 15px;
+      padding-left: 24px;
+      position: absolute;
+      text-align: center;
+      top: 50%;
+      transform: translateX(-50%);
+    }
+  }
+
   img {
     display: block;
     height: calc(100vh - 105px);

@@ -32,15 +32,17 @@ const App = (props) => {
   const [isCountingDown, setIsCountingDown] = useState(false);
   const [isRacing, setIsRacing] = useState(false);
   const [pingArduinoStatus, setPingArduinoStatus] = useState(false);
+  const [racingInterval, setRacingInterval] = useState(null);
   const [refreshPortCount, setRefreshPortCount] = useState(0);
   const [serialData, setSerialData] = useState({ message: '', value: '' });
   const [stoplightComponent, setStoplightComponent] = useState(null);
+  const [timeElapsed, setTimeElapsed] = useState(0);
   const [track1Start, setTrack1Start] = useState(false);
   const [track2Start, setTrack2Start] = useState(false);
   const [track3Start, setTrack3Start] = useState(false);
-  const [track1Time, setTrack1Time] = useState(0);
-  const [track2Time, setTrack2Time] = useState(0);
-  const [track3Time, setTrack3Time] = useState(0);
+  // const [track1Time, setTrack1Time] = useState(0);
+  // const [track2Time, setTrack2Time] = useState(0);
+  // const [track3Time, setTrack3Time] = useState(0);
 
   const onSerialData = (data, setData) => {
     const message = Object.keys(data)[0];
@@ -86,8 +88,20 @@ const App = (props) => {
     clearInterval(countdownInterval);
     setCountdownInterval(null);
     setCountdown(0);
+    setIsCountingDown(false);
     setIsRacing(true);
     sendMessage(MESSAGE_START_RACE);
+  };
+
+  const cleanupRacingInterval = () => {
+    clearInterval(racingInterval);
+    setIsRacing(false);
+  };
+
+  const getRaceTime = (startTime) => {
+    const msElapsed = Date.now() - startTime;
+    const seconds = Math.floor(msElapsed / 1000);
+    setTimeElapsed(`${Math.floor(msElapsed / 1000)}.${msElapsed - (seconds * 1000)}`);
   };
 
   /** ***************** useEffect hooks ******************* */
@@ -106,8 +120,8 @@ const App = (props) => {
     }
 
     if (handshake) {
-      if (serialData.message === 'start-button-pressed'
-        && countdown === 0 && !isCountingDown
+      if (serialData.message === 'start-button-pressed' && !isAppIdle
+        && !isRacing && countdown === 0 && !isCountingDown
       ) {
         setIsCountingDown(true);
         setCountdownInterval(setInterval(() => {
@@ -119,11 +133,22 @@ const App = (props) => {
       if (serialData.message === 'track-2-start') setTrack2Start(serialData.value === '1');
       if (serialData.message === 'track-3-start') setTrack3Start(serialData.value === '1');
 
-      if (serialData.message === 'time-track-1') setTrack1Time(serialData.value);
-      if (serialData.message === 'time-track-2') setTrack2Time(serialData.value);
-      if (serialData.message === 'time-track-3') setTrack3Time(serialData.value);
+      // if (serialData.message === 'time-track-1') setTrack1Time(serialData.value);
+      // if (serialData.message === 'time-track-2') setTrack2Time(serialData.value);
+      // if (serialData.message === 'time-track-3') setTrack3Time(serialData.value);
     }
   }, [serialData]);
+
+  useEffect(() => {
+    if (isRacing) {
+      const startTime = Date.now();
+      setRacingInterval(setInterval(() => getRaceTime(startTime), 10));
+    }
+  }, [isRacing]);
+
+  useEffect(() => {
+    if (timeElapsed >= 9.999) cleanupRacingInterval();
+  }, [timeElapsed]);
 
   useEffect(() => {
     if (countdown > 2) cleanupCountdown();
@@ -156,7 +181,7 @@ const App = (props) => {
                   active={track1Start}
                   isRacing={isRacing}
                   laneNumber={1}
-                  time={track1Time}
+                  time={timeElapsed}
                 />
               </Col>
               <Col>
@@ -164,7 +189,7 @@ const App = (props) => {
                   active={track2Start}
                   isRacing={isRacing}
                   laneNumber={2}
-                  time={track2Time}
+                  time={timeElapsed}
                 />
               </Col>
               <Col>
@@ -172,7 +197,7 @@ const App = (props) => {
                   active={track3Start}
                   isRacing={isRacing}
                   laneNumber={3}
-                  time={track3Time}
+                  time={timeElapsed}
                 />
               </Col>
             </Row>

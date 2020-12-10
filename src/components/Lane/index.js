@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 
-import Timer from '@components/Timer';
 import Lane1Active from '@images/409.MA.3 Lane1 withcar_2020_RG.png';
 import Lane2Active from '@images/409.MA.4 Lane2 withcar_2020_RG.png';
 import Lane3Active from '@images/409.MA.5  Lane3 withcar_2020_RG.png';
@@ -38,7 +37,9 @@ function RenderLaneImage(isActive, number) {
 }
 
 const Lane = (props) => {
-  const { active, laneNumber, isRacing } = props;
+  const {
+    active, laneNumber, isRacing, time,
+  } = props;
 
   const [laneImage, setLaneImage] = useState(null);
 
@@ -49,7 +50,11 @@ const Lane = (props) => {
 
   return (
     <div className="lane-container">
-      <Timer active={active} isRacing={isRacing} />
+      <div className="timer">
+        <span className={(isRacing) ? '' : 'd-none'}>
+          {time}
+        </span>
+      </div>
       <img alt={`Lane ${laneNumber}`} src={laneImage} />
     </div>
   );
@@ -59,6 +64,7 @@ Lane.propTypes = {
   active: PropTypes.bool.isRequired,
   isRacing: PropTypes.bool.isRequired,
   laneNumber: PropTypes.number.isRequired,
+  time: PropTypes.number.isRequired,
 };
 
 export default Lane;
