@@ -24,3 +24,21 @@
     width: calc(20% + 4px);
   }
 }
+
+.loading {
+  color: $white;
+  font-family: 'National', Arial, Helvetica, sans-serif;
+  font-size: 5em;
+  font-weight: 800;
+  height: 100vh;
+  position: relative;
+  text-align: center;
+  width: 100%;
+
+  & > div {
+    left: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+}

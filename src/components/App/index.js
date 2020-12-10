@@ -2,6 +2,7 @@ import Helmet from 'react-helmet';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { Col, Container, Row } from 'reactstrap';
+import { Wave } from 'react-animated-text';
 
 import { WAKE_ARDUINO } from '@arduino/arduino-base/ReactSerial/ArduinoConstants';
 import IPC from '@arduino/arduino-base/ReactSerial/IPCMessages';
@@ -159,7 +160,13 @@ const App = (props) => {
     if (!isAppIdle) sendMessage(MESSAGE_GET_BEAMS);
   }, [isAppIdle]);
 
-  if (!handshake) return <p>no handshake</p>;
+  if (!handshake) {
+    return (
+      <div className="loading">
+        <Wave effect="fadeOut" text="Loading..." />
+      </div>
+    );
+  }
   if (isAppIdle) return <AttractScreen callback={() => setIsAppIdle(false)} />;
 
   return (
