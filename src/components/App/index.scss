@@ -2,8 +2,9 @@
   background-image: url("../../images/409.MA.2\ BaseFrame_2020_RG.png");
   background-position: center; /* Center the image */
   background-repeat: no-repeat; /* Do not repeat the image */
-  background-size: cover; /* Resize the background image to cover the entire container */
+  background-size: contain;
   height: 100vh;
+  padding: 0 15px !important;
 
   .previous-race-column {
     height: 100%;
@@ -12,7 +13,7 @@
   }
 
   .track-lane-column {
-    height: 100%;
+    height: calc(100vh - 30px);
     position: relative;
     width: calc(60% - 8px);
   }

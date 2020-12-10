@@ -6,7 +6,7 @@ import './index.scss';
 const Timer = (props) => {
   const { isRacing } = props;
 
-  const [timeElapsed, setTimeElapsed] = useState(0.000);
+  const [timeElapsed, setTimeElapsed] = useState(8.888);
 
   const getRaceTime = (startTime) => {
     const msElapsed = Date.now() - startTime;
@@ -21,10 +21,9 @@ const Timer = (props) => {
 
   return (
     <div className="timer">
-      <h1>0.000</h1>
-      <h1 className={(isRacing) ? 'time' : 'time d-none'}>
+      <span className={(isRacing) ? '' : ''}>
         {timeElapsed}
-      </h1>
+      </span>
     </div>
   );
 };

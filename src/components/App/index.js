@@ -1,3 +1,4 @@
+import Helmet from 'react-helmet';
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { Col, Container, Row } from 'reactstrap';
@@ -138,8 +139,12 @@ const App = (props) => {
 
   return (
     <>
+      <Helmet>
+        <meta charSet="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+      </Helmet>
       <Audio trigger={(countdown)} />
-      <Container className="app p-0" fluid>
+      <Container className="app" fluid>
         <Row className="no-gutters">
           <div className="previous-race-column">
             HI

@@ -1,6 +1,6 @@
 @font-face {
   font-family: 'DigitalDisplay';
-  src: url('./fonts/DigitalDisplay_Font/DigitalDisplay.ttf') format('ttf');
+  src: url('fonts/digital_display_tfb.ttf') format('truetype');
 }
 
 html,
@@ -15,6 +15,6 @@ body {
   font-family: $smm-default-font;
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
-  //font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-  //'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  overflow: hidden;
+  user-select: none;
 }

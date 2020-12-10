@@ -1,9 +1,9 @@
-.lane {
-  border: 2px solid rgb(140, 140, 140);
-  opacity: 0.5;
-  width: 100%;
+.lane-container {
+  padding: 52.5px 0;
 
-  &.active {
-    opacity: 1;
+  img {
+    display: block;
+    height: calc(100vh - 105px);
+    margin: auto;
   }
 }

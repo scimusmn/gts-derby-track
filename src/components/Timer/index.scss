@@ -1,19 +1,20 @@
 .timer {
-  background-color: #222;
   color: grey;
-  font-family: 'DigitalDisplay', monospace;
-  font-size: 18px;
-  font-weight: bold;
   height: 100px;
+  position: absolute;
+  width: 100%;
 
-  h1 {
+  span {
+    color: red;
+    font-family: 'DigitalDisplay', monospace;
+    font-size: 6.1em;
+    font-weight: bold;
+    left: 50%;
+    letter-spacing: 15px;
+    padding-left: 24px;
     position: absolute;
     text-align: center;
     top: 50%;
-    width: 100%;
-  }
-
-  .time {
-    color: red;
+    transform: translateX(-50%);
   }
 }
