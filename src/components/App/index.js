@@ -134,7 +134,7 @@ const App = (props) => {
     if (!isAppIdle) sendMessage(MESSAGE_GET_BEAMS);
   }, [isAppIdle]);
 
-  // if (!handshake) return <p>no handshake</p>;
+  if (!handshake) return <p>no handshake</p>;
   if (isAppIdle) return <AttractScreen callback={() => setIsAppIdle(false)} />;
 
   return (

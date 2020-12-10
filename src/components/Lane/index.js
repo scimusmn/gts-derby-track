@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import Timer from '@components/Timer';
 import Lane1Active from '@images/409.MA.3 Lane1 car_2020_RG.png';
@@ -11,39 +11,46 @@ import Lane3Inactive from '@images/409.MA.8 Lane3 withoutcar_2020_RG.png';
 
 import './index.scss';
 
+function RenderLaneImage(isActive, number) {
+  if (!isActive) {
+    switch (number) {
+      case 1:
+        return Lane1Inactive;
+      case 2:
+        return Lane2Inactive;
+      case 3:
+        return Lane3Inactive;
+      default:
+        return null;
+    }
+  }
+
+  switch (number) {
+    case 1:
+      return Lane1Active;
+    case 2:
+      return Lane2Active;
+    case 3:
+      return Lane3Active;
+    default:
+      return null;
+  }
+}
+
 const Lane = (props) => {
   const { active, laneNumber, isRacing } = props;
 
-  const getLaneImage = (isActive, number) => {
-    if (!isActive) {
-      switch (number) {
-        case 1:
-          return Lane1Inactive;
-        case 2:
-          return Lane2Inactive;
-        case 3:
-          return Lane3Inactive;
-        default:
-          return Lane1Inactive;
-      }
-    }
+  const [laneImage, setLaneImage] = useState(null);
 
-    switch (number) {
-      case 1:
-        return Lane1Active;
-      case 2:
-        return Lane2Active;
-      case 3:
-        return Lane3Active;
-      default:
-        return Lane1Active;
-    }
-  };
+  useEffect(() => {
+    // Prevent Lane from switching images if we're racing
+    if (!isRacing) setLaneImage(RenderLaneImage(active, laneNumber));
+  }, [active, isRacing, laneNumber]);
 
   return (
     <div className="lane-container">
       <Timer active={active} isRacing={isRacing} />
-      <img alt={`Lane ${laneNumber}`} src={getLaneImage(!active, laneNumber)} />
+      <img alt={`Lane ${laneNumber}`} src={laneImage} />
     </div>
   );
 };

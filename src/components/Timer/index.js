@@ -21,7 +21,7 @@ const Timer = (props) => {
 
   return (
     <div className="timer">
-      <span className={(isRacing) ? '' : ''}>
+      <span className={(isRacing) ? '' : 'd-none'}>
         {timeElapsed}
       </span>
     </div>
