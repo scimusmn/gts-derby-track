@@ -30,11 +30,7 @@ const Stoplight = (props) => {
 
   return (
     <div className="stoplight">
-      <img
-        alt="stoplight"
-        className="w-100"
-        src={stoplightImage}
-      />
+      <img alt="stoplight" src={stoplightImage} />
     </div>
   );
 };

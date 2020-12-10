@@ -1,0 +1,25 @@
+.app {
+  background-image: url("../../images/409.MA.2\ BaseFrame_2020_RG.png");
+  background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Do not repeat the image */
+  background-size: cover; /* Resize the background image to cover the entire container */
+  height: 100vh;
+
+  .previous-race-column {
+    height: 100%;
+    position: relative;
+    width: calc(20% + 4px);
+  }
+
+  .track-lane-column {
+    height: 100%;
+    position: relative;
+    width: calc(60% - 8px);
+  }
+
+  .stoplight-column {
+    height: 100%;
+    position: relative;
+    width: calc(20% + 4px);
+  }
+}

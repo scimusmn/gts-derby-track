@@ -10,6 +10,8 @@ import Audio from '@components/Audio';
 import Lane from '@components/Lane';
 import Stoplight from '@components/Stoplight';
 
+import './index.scss';
+
 const MESSAGE_GET_BEAMS = '{get-beam-states:1}';
 const MESSAGE_START_RACE = "{ 'message': 'racing', 'value': 1 }";
 
@@ -131,7 +133,7 @@ const App = (props) => {
     if (!isAppIdle) sendMessage(MESSAGE_GET_BEAMS);
   }, [isAppIdle]);
 
-  if (!handshake) return <p>no handshake</p>;
+  // if (!handshake) return <p>no handshake</p>;
   if (isAppIdle) return <AttractScreen callback={() => setIsAppIdle(false)} />;
 
   return (
@@ -139,10 +141,10 @@ const App = (props) => {
       <Audio trigger={(countdown)} />
       <Container className="app p-0" fluid>
         <Row className="no-gutters">
-          <Col md={2}>
+          <div className="previous-race-column">
             HI
-          </Col>
-          <Col className="text-light" md={8}>
+          </div>
+          <div className="track-lane-column">
             <Row className="no-gutters">
               <Col>
                 <Lane
@@ -169,10 +171,10 @@ const App = (props) => {
                 />
               </Col>
             </Row>
-          </Col>
-          <Col md={2}>
+          </div>
+          <div className="stoplight-column">
             {stoplightComponent}
-          </Col>
+          </div>
         </Row>
       </Container>
     </>
