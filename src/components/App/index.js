@@ -3,14 +3,17 @@ import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 import { Col, Container, Row } from 'reactstrap';
 import { Wave } from 'react-animated-text';
+import useSound from 'use-sound';
 
 import { WAKE_ARDUINO } from '@arduino/arduino-base/ReactSerial/ArduinoConstants';
 import IPC from '@arduino/arduino-base/ReactSerial/IPCMessages';
 import withSerialCommunication from '@arduino/arduino-base/ReactSerial/SerialHOC';
 import AttractScreen from '@components/AttractScreen';
-import Audio from '@components/Audio';
 import Lane from '@components/Lane';
 import Stoplight from '@components/Stoplight';
+
+import StoplightGo from '@audio/stoplight-go.wav';
+import StoplightWait from '@audio/stoplight-wait.wav';
 
 import './index.scss';
 
@@ -44,6 +47,9 @@ const App = (props) => {
   // const [track1Time, setTrack1Time] = useState(0);
   // const [track2Time, setTrack2Time] = useState(0);
   // const [track3Time, setTrack3Time] = useState(0);
+
+  const [playStoplightGo, stoplightGo] = useSound(StoplightGo);
+  const [playStoplightWait, stoplightWait] = useSound(StoplightWait);
 
   const onSerialData = (data, setData) => {
     const message = Object.keys(data)[0];
@@ -152,6 +158,16 @@ const App = (props) => {
   }, [timeElapsed]);
 
   useEffect(() => {
+    if (countdown === 1) {
+      stoplightWait.stop();
+      playStoplightWait();
+    }
+
+    if (countdown === 2) {
+      stoplightGo.stop();
+      playStoplightGo();
+    }
+
     if (countdown > 2) cleanupCountdown();
     setStoplightComponent(RenderStoplight(countdown));
   }, [countdown]);
@@ -175,7 +191,6 @@ const App = (props) => {
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
       </Helmet>
-      <Audio trigger={(countdown)} />
       <Container className="app" fluid>
         <Row className="no-gutters">
           <div className="previous-race-column">
