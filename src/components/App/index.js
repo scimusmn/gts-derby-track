@@ -12,13 +12,14 @@ import AttractScreen from '@components/AttractScreen';
 import Lane from '@components/Lane';
 import Stoplight from '@components/Stoplight';
 
+import Song from '@audio/song.wav';
 import StoplightGo from '@audio/stoplight-go.wav';
 import StoplightWait from '@audio/stoplight-wait.wav';
 
 import './index.scss';
 
 const MESSAGE_GET_BEAMS = '{get-beam-states:1}';
-const MESSAGE_START_RACE = "{ 'message': 'racing', 'value': 1 }";
+const MESSAGE_START_RACE = '{racing:1}';
 
 function RenderStoplight(status) {
   return (<Stoplight status={status} />);
@@ -31,6 +32,7 @@ const App = (props) => {
 
   const [countdown, setCountdown] = useState(0);
   const [countdownInterval, setCountdownInterval] = useState(null);
+  const [dev] = useState(false);
   const [handshake, setHandshake] = useState(false);
   const [isAppIdle, setIsAppIdle] = useState(true);
   const [isCountingDown, setIsCountingDown] = useState(false);
@@ -41,6 +43,9 @@ const App = (props) => {
   const [serialData, setSerialData] = useState({ message: '', value: '' });
   const [stoplightComponent, setStoplightComponent] = useState(null);
   const [timeElapsed, setTimeElapsed] = useState(0);
+  const [track1Finish, setTrack1Finish] = useState(0);
+  const [track2Finish, setTrack2Finish] = useState(0);
+  const [track3Finish, setTrack3Finish] = useState(0);
   const [track1Start, setTrack1Start] = useState(false);
   const [track2Start, setTrack2Start] = useState(false);
   const [track3Start, setTrack3Start] = useState(false);
@@ -48,6 +53,7 @@ const App = (props) => {
   // const [track2Time, setTrack2Time] = useState(0);
   // const [track3Time, setTrack3Time] = useState(0);
 
+  const [playSong, song] = useSound(Song, { loop: true });
   const [playStoplightGo, stoplightGo] = useSound(StoplightGo);
   const [playStoplightWait, stoplightWait] = useSound(StoplightWait);
 
@@ -101,14 +107,11 @@ const App = (props) => {
   };
 
   const cleanupRacingInterval = () => {
+    console.log('cleanup race');
     clearInterval(racingInterval);
     setIsRacing(false);
-  };
-
-  const getRaceTime = (startTime) => {
-    const msElapsed = Date.now() - startTime;
-    const seconds = Math.floor(msElapsed / 1000);
-    setTimeElapsed(`${Math.floor(msElapsed / 1000)}.${msElapsed - (seconds * 1000)}`);
+    setTimeElapsed(0);
+    song.stop();
   };
 
   /** ***************** useEffect hooks ******************* */
@@ -140,21 +143,27 @@ const App = (props) => {
       if (serialData.message === 'track-2-start') setTrack2Start(serialData.value === '1');
       if (serialData.message === 'track-3-start') setTrack3Start(serialData.value === '1');
 
-      // if (serialData.message === 'time-track-1') setTrack1Time(serialData.value);
-      // if (serialData.message === 'time-track-2') setTrack2Time(serialData.value);
-      // if (serialData.message === 'time-track-3') setTrack3Time(serialData.value);
+      if (serialData.message === 'track-1-finish') setTrack1Finish(timeElapsed);
+      if (serialData.message === 'track-2-finish') setTrack2Finish(timeElapsed);
+      if (serialData.message === 'track-3-finish') setTrack3Finish(timeElapsed);
     }
   }, [serialData]);
 
   useEffect(() => {
     if (isRacing) {
+      song.stop();
+      playSong();
+
       const startTime = Date.now();
-      setRacingInterval(setInterval(() => getRaceTime(startTime), 10));
+      setRacingInterval(setInterval(() => {
+        const msElapsed = Date.now() - startTime;
+        setTimeElapsed(msElapsed);
+      }, 50));
     }
   }, [isRacing]);
 
   useEffect(() => {
-    if (timeElapsed >= 9.999) cleanupRacingInterval();
+    if (timeElapsed >= 10000) cleanupRacingInterval();
   }, [timeElapsed]);
 
   useEffect(() => {
@@ -176,14 +185,15 @@ const App = (props) => {
     if (!isAppIdle) sendMessage(MESSAGE_GET_BEAMS);
   }, [isAppIdle]);
 
-  if (!handshake) {
+  if (!handshake && !dev) {
     return (
       <div className="loading">
         <Wave effect="fadeOut" text="Loading..." />
       </div>
     );
   }
-  if (isAppIdle) return <AttractScreen callback={() => setIsAppIdle(false)} />;
+
+  if (isAppIdle && !dev) return <AttractScreen callback={() => setIsAppIdle(false)} />;
 
   return (
     <>
@@ -201,6 +211,7 @@ const App = (props) => {
               <Col>
                 <Lane
                   active={track1Start}
+                  finish={track1Finish}
                   isRacing={isRacing}
                   laneNumber={1}
                   time={timeElapsed}
@@ -209,6 +220,7 @@ const App = (props) => {
               <Col>
                 <Lane
                   active={track2Start}
+                  finish={track2Finish}
                   isRacing={isRacing}
                   laneNumber={2}
                   time={timeElapsed}
@@ -217,6 +229,7 @@ const App = (props) => {
               <Col>
                 <Lane
                   active={track3Start}
+                  finish={track3Finish}
                   isRacing={isRacing}
                   laneNumber={3}
                   time={timeElapsed}

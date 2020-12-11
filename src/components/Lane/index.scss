@@ -10,16 +10,32 @@
     span {
       color: red;
       font-family: 'DigitalDisplay', monospace;
-      font-size: 6.1em;
-      font-variant-numeric: tabular-nums;
+      font-size: 6.4em;
       font-weight: bold;
-      left: 50%;
-      letter-spacing: 15px;
-      padding-left: 24px;
       position: absolute;
       text-align: center;
-      top: 50%;
-      transform: translateX(-50%);
+      top: 45px;
+      width: 40px;
+
+      &.seconds {
+        left: 55px;
+      }
+
+      &.decimal {
+        left: 95px;
+      }
+
+      &.first {
+        left: 133px;
+      }
+
+      &.second {
+        left: 186px;
+      }
+
+      &.third {
+        left: 238px;
+      }
     }
   }
 
