@@ -43,5 +43,13 @@
     display: block;
     height: calc(100vh - 105px);
     margin: auto;
+
+    &.ribbon {
+      height: 35%;
+      left: 50%;
+      position: absolute;
+      top: 225px;
+      transform: translateX(-50%);
+    }
   }
 }

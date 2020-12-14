@@ -8,6 +8,10 @@ import Lane1Inactive from '@images/409.MA.6 Lane1 withoutcar_2020_RG4.png';
 import Lane2Inactive from '@images/409.MA.7 Lane7 withoutcar_2020_RG5.png';
 import Lane3Inactive from '@images/409.MA.8 Lane3 withoutcar_2020_RG.png';
 
+import BlueRibbon from '@images/409.MA.12 BlueRibbon_2020_RG.png';
+import RedRibbon from '@images/409.MA.13 RedRibbon_2020_RG.png';
+import YellowRibbon from '@images/409.MA.14 YellowRibbon_2020_RG.png';
+
 import './index.scss';
 
 function RenderLaneImage(isActive, number) {
@@ -36,12 +40,37 @@ function RenderLaneImage(isActive, number) {
   }
 }
 
+function RenderRibbon(placement) {
+  let ribbon;
+
+  switch (placement) {
+    case 1:
+      ribbon = BlueRibbon;
+      break;
+    case 2:
+      ribbon = RedRibbon;
+      break;
+    case 3:
+      ribbon = YellowRibbon;
+      break;
+    default:
+      break;
+  }
+
+  if (ribbon) {
+    return <img alt="ribbon" className="ribbon" src={ribbon} />;
+  }
+
+  return null;
+}
+
 const Lane = (props) => {
   const {
-    active, finish, laneNumber, isRacing, time,
+    active, finish, laneNumber, isRacing, placement, time,
   } = props;
 
   const [laneImage, setLaneImage] = useState(null);
+  const [ribbon, setRibbon] = useState(null);
   const [seconds, setSeconds] = useState(0);
   const [first, setFirst] = useState(0);
   const [second, setSecond] = useState(0);
@@ -74,6 +103,10 @@ const Lane = (props) => {
     else calculateDigits(time);
   }, [finish, time]);
 
+  useEffect(() => {
+    setRibbon(RenderRibbon(placement));
+  }, [placement]);
+
   return (
     <div className="lane-container">
       <div className={(isRacing) ? 'timer' : 'd-none timer'}>
@@ -84,6 +117,7 @@ const Lane = (props) => {
         <span className="third">{third}</span>
       </div>
       <img alt={`Lane ${laneNumber}`} src={laneImage} />
+      {ribbon}
     </div>
   );
 };
@@ -93,6 +127,7 @@ Lane.propTypes = {
   finish: PropTypes.number.isRequired,
   isRacing: PropTypes.bool.isRequired,
   laneNumber: PropTypes.number.isRequired,
+  placement: PropTypes.number.isRequired,
   time: PropTypes.number.isRequired,
 };
 

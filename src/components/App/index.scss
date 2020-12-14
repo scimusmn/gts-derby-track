@@ -8,8 +8,73 @@
 
   .previous-race-column {
     height: 100%;
+    margin: 131px 0;
     position: relative;
     width: calc(20% + 4px);
+
+    .col {
+      height: calc((100vh - 262px) / 3);
+    }
+
+    .timer {
+      color: grey;
+      position: absolute;
+      width: 100%;
+
+      span {
+        color: red;
+        font-family: 'DigitalDisplay', monospace;
+        font-size: 3.7em;
+        font-weight: bold;
+        position: absolute;
+        text-align: center;
+        width: 20px;
+
+        &.seconds {
+          left: 93px;
+        }
+
+        &.decimal {
+          left: 117px;
+        }
+
+        &.first {
+          left: 138px;
+        }
+
+        &.second {
+          left: 170px;
+        }
+
+        &.third {
+          left: 201px;
+        }
+      }
+    }
+
+    .row:nth-of-type(1) {
+      .timer {
+        span {
+          top: 60px;
+        }
+      }
+    }
+
+    .row:nth-of-type(2) {
+      .timer {
+        span {
+          top: 94px;
+        }
+      }
+    }
+
+    .row:nth-of-type(3) {
+      .timer {
+        span {
+          top: 128px;
+        }
+      }
+    }
   }
 
   .track-lane-column {

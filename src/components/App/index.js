@@ -17,6 +17,7 @@ import StoplightGo from '@audio/stoplight-go.wav';
 import StoplightWait from '@audio/stoplight-wait.wav';
 
 import './index.scss';
+import PreviousTimerDisplay from '../PreviousTimerDisplay';
 
 const MESSAGE_GET_BEAMS = '{get-beam-states:1}';
 const MESSAGE_START_RACE = '{racing:1}';
@@ -46,12 +47,15 @@ const App = (props) => {
   const [track1Finish, setTrack1Finish] = useState(0);
   const [track2Finish, setTrack2Finish] = useState(0);
   const [track3Finish, setTrack3Finish] = useState(0);
+  const [track1Placement, setTrack1Placement] = useState(0);
+  const [track2Placement, setTrack2Placement] = useState(0);
+  const [track3Placement, setTrack3Placement] = useState(0);
+  const [track1PreviousFinish, setTrack1PreviousFinish] = useState(0);
+  const [track2PreviousFinish, setTrack2PreviousFinish] = useState(0);
+  const [track3PreviousFinish, setTrack3PreviousFinish] = useState(0);
   const [track1Start, setTrack1Start] = useState(false);
   const [track2Start, setTrack2Start] = useState(false);
   const [track3Start, setTrack3Start] = useState(false);
-  // const [track1Time, setTrack1Time] = useState(0);
-  // const [track2Time, setTrack2Time] = useState(0);
-  // const [track3Time, setTrack3Time] = useState(0);
 
   const [playSong, song] = useSound(Song, { loop: true });
   const [playStoplightGo, stoplightGo] = useSound(StoplightGo);
@@ -112,6 +116,37 @@ const App = (props) => {
     setIsRacing(false);
     setTimeElapsed(0);
     song.stop();
+
+    const raceTimes = [
+      ['track1', track1Finish],
+      ['track2', track2Finish],
+      ['track3', track3Finish],
+    ];
+
+    raceTimes.sort((a, b) => {
+      if (a[1] === b[1]) return 0;
+      return (a[1] < b[1]) ? -1 : 1;
+    });
+
+    for (let i = 0; i <= 2; i += 1) {
+      switch (raceTimes[i][0]) {
+        case 'track1':
+          setTrack1Placement(i + 1);
+          break;
+        case 'track2':
+          setTrack2Placement(i + 1);
+          break;
+        case 'track3':
+          setTrack3Placement(i + 1);
+          break;
+        default:
+          break;
+      }
+    }
+
+    setTrack1PreviousFinish(track1Finish);
+    setTrack2PreviousFinish(track2Finish);
+    setTrack3PreviousFinish(track3Finish);
   };
 
   /** ***************** useEffect hooks ******************* */
@@ -132,11 +167,19 @@ const App = (props) => {
     if (handshake) {
       if (serialData.message === 'start-button-pressed' && !isAppIdle
         && !isRacing && countdown === 0 && !isCountingDown
+        && (track1Start || track2Start || track3Start)
       ) {
+        setTrack1Finish(0);
+        setTrack2Finish(0);
+        setTrack3Finish(0);
+
         setIsCountingDown(true);
         setCountdownInterval(setInterval(() => {
           setCountdown((prevState) => prevState + 1);
         }, 1000));
+        setTrack1Placement(0);
+        setTrack2Placement(0);
+        setTrack3Placement(0);
       }
 
       if (serialData.message === 'track-1-start') setTrack1Start(serialData.value === '1');
@@ -204,7 +247,21 @@ const App = (props) => {
       <Container className="app" fluid>
         <Row className="no-gutters">
           <div className="previous-race-column">
-            HI
+            <Row className="no-gutters">
+              <Col>
+                <PreviousTimerDisplay finishTime={track1PreviousFinish} />
+              </Col>
+            </Row>
+            <Row className="no-gutters">
+              <Col>
+                <PreviousTimerDisplay finishTime={track2PreviousFinish} />
+              </Col>
+            </Row>
+            <Row className="no-gutters">
+              <Col>
+                <PreviousTimerDisplay finishTime={track3PreviousFinish} />
+              </Col>
+            </Row>
           </div>
           <div className="track-lane-column">
             <Row className="no-gutters">
@@ -214,6 +271,7 @@ const App = (props) => {
                   finish={track1Finish}
                   isRacing={isRacing}
                   laneNumber={1}
+                  placement={track1Placement}
                   time={timeElapsed}
                 />
               </Col>
@@ -223,6 +281,7 @@ const App = (props) => {
                   finish={track2Finish}
                   isRacing={isRacing}
                   laneNumber={2}
+                  placement={track2Placement}
                   time={timeElapsed}
                 />
               </Col>
@@ -232,6 +291,7 @@ const App = (props) => {
                   finish={track3Finish}
                   isRacing={isRacing}
                   laneNumber={3}
+                  placement={track3Placement}
                   time={timeElapsed}
                 />
               </Col>
