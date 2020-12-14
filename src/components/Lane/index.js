@@ -66,9 +66,10 @@ function RenderRibbon(placement) {
 
 const Lane = (props) => {
   const {
-    active, finish, laneNumber, isRacing, placement, time,
+    finish, laneNumber, isActive, isRacing, placement, time,
   } = props;
 
+  const [active, setActive] = useState(false);
   const [laneImage, setLaneImage] = useState(null);
   const [ribbon, setRibbon] = useState(null);
   const [seconds, setSeconds] = useState(0);
@@ -95,8 +96,11 @@ const Lane = (props) => {
 
   useEffect(() => {
     // Prevent Lane from switching images if we're racing
-    if (!isRacing) setLaneImage(RenderLaneImage(active, laneNumber));
-  }, [active, isRacing, laneNumber]);
+    if (!isRacing) {
+      setActive(isActive);
+      setLaneImage(RenderLaneImage(isActive, laneNumber));
+    }
+  }, [isActive, isRacing, laneNumber]);
 
   useEffect(() => {
     if (finish !== 0) calculateDigits(finish);
@@ -109,7 +113,7 @@ const Lane = (props) => {
 
   return (
     <div className="lane-container">
-      <div className={(isRacing) ? 'timer' : 'd-none timer'}>
+      <div className={(active && isRacing) ? 'timer' : 'd-none timer'}>
         <span className="seconds">{seconds}</span>
         <span className="decimal">.</span>
         <span className="first">{first}</span>
@@ -123,8 +127,8 @@ const Lane = (props) => {
 };
 
 Lane.propTypes = {
-  active: PropTypes.bool.isRequired,
   finish: PropTypes.number.isRequired,
+  isActive: PropTypes.bool.isRequired,
   isRacing: PropTypes.bool.isRequired,
   laneNumber: PropTypes.number.isRequired,
   placement: PropTypes.number.isRequired,

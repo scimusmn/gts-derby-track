@@ -117,27 +117,29 @@ const App = (props) => {
     setTimeElapsed(0);
     song.stop();
 
-    const raceTimes = [
+    const results = [
       ['track1', track1Finish],
       ['track2', track2Finish],
       ['track3', track3Finish],
     ];
+
+    const raceTimes = results.filter((result) => result[1] > 0);
 
     raceTimes.sort((a, b) => {
       if (a[1] === b[1]) return 0;
       return (a[1] < b[1]) ? -1 : 1;
     });
 
-    for (let i = 0; i <= 2; i += 1) {
+    for (let i = 0; i < raceTimes.length; i += 1) {
       switch (raceTimes[i][0]) {
         case 'track1':
-          setTrack1Placement(i + 1);
+          if (raceTimes[i][1] > 0) setTrack1Placement(i + 1);
           break;
         case 'track2':
-          setTrack2Placement(i + 1);
+          if (raceTimes[i][1] > 0) setTrack2Placement(i + 1);
           break;
         case 'track3':
-          setTrack3Placement(i + 1);
+          if (raceTimes[i][1] > 0) setTrack3Placement(i + 1);
           break;
         default:
           break;
@@ -147,6 +149,12 @@ const App = (props) => {
     setTrack1PreviousFinish(track1Finish);
     setTrack2PreviousFinish(track2Finish);
     setTrack3PreviousFinish(track3Finish);
+  };
+
+  const resetPlacements = () => {
+    setTrack1Placement(0);
+    setTrack2Placement(0);
+    setTrack3Placement(0);
   };
 
   /** ***************** useEffect hooks ******************* */
@@ -177,18 +185,36 @@ const App = (props) => {
         setCountdownInterval(setInterval(() => {
           setCountdown((prevState) => prevState + 1);
         }, 1000));
-        setTrack1Placement(0);
-        setTrack2Placement(0);
-        setTrack3Placement(0);
+
+        resetPlacements();
       }
 
-      if (serialData.message === 'track-1-start') setTrack1Start(serialData.value === '1');
-      if (serialData.message === 'track-2-start') setTrack2Start(serialData.value === '1');
-      if (serialData.message === 'track-3-start') setTrack3Start(serialData.value === '1');
+      if (serialData.message === 'track-1-start') {
+        setTrack1Start(serialData.value === '1');
+        resetPlacements();
+      }
 
-      if (serialData.message === 'track-1-finish') setTrack1Finish(timeElapsed);
-      if (serialData.message === 'track-2-finish') setTrack2Finish(timeElapsed);
-      if (serialData.message === 'track-3-finish') setTrack3Finish(timeElapsed);
+      if (serialData.message === 'track-2-start') {
+        setTrack2Start(serialData.value === '1');
+        resetPlacements();
+      }
+
+      if (serialData.message === 'track-3-start') {
+        setTrack3Start(serialData.value === '1');
+        resetPlacements();
+      }
+
+      if (serialData.message === 'track-1-finish' && track1Finish === 0) {
+        setTrack1Finish(timeElapsed);
+      }
+
+      if (serialData.message === 'track-2-finish' && track2Finish === 0) {
+        setTrack2Finish(timeElapsed);
+      }
+
+      if (serialData.message === 'track-3-finish' && track3Finish === 0) {
+        setTrack3Finish(timeElapsed);
+      }
     }
   }, [serialData]);
 
@@ -267,8 +293,8 @@ const App = (props) => {
             <Row className="no-gutters">
               <Col>
                 <Lane
-                  active={track1Start}
                   finish={track1Finish}
+                  isActive={track1Start}
                   isRacing={isRacing}
                   laneNumber={1}
                   placement={track1Placement}
@@ -277,8 +303,8 @@ const App = (props) => {
               </Col>
               <Col>
                 <Lane
-                  active={track2Start}
                   finish={track2Finish}
+                  isActive={track2Start}
                   isRacing={isRacing}
                   laneNumber={2}
                   placement={track2Placement}
@@ -287,8 +313,8 @@ const App = (props) => {
               </Col>
               <Col>
                 <Lane
-                  active={track3Start}
                   finish={track3Finish}
+                  isActive={track3Start}
                   isRacing={isRacing}
                   laneNumber={3}
                   placement={track3Placement}

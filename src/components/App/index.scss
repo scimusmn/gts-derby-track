@@ -4,13 +4,13 @@
   background-repeat: no-repeat; /* Do not repeat the image */
   background-size: contain;
   height: 100vh;
-  padding: 0 15px !important;
+  padding: 0 !important;
 
   .previous-race-column {
     height: 100%;
     margin: 131px 0;
     position: relative;
-    width: calc(20% + 4px);
+    width: calc(20% + 5px);
 
     .col {
       height: calc((100vh - 262px) / 3);
@@ -31,23 +31,23 @@
         width: 20px;
 
         &.seconds {
-          left: 93px;
+          left: 108px;
         }
 
         &.decimal {
-          left: 117px;
+          left: 132px;
         }
 
         &.first {
-          left: 138px;
+          left: 153px;
         }
 
         &.second {
-          left: 170px;
+          left: 185px;
         }
 
         &.third {
-          left: 201px;
+          left: 216px;
         }
       }
     }
@@ -80,13 +80,13 @@
   .track-lane-column {
     height: calc(100vh - 30px);
     position: relative;
-    width: calc(60% - 8px);
+    width: calc(60% - 10px);
   }
 
   .stoplight-column {
     height: 100%;
     position: relative;
-    width: calc(20% + 4px);
+    width: calc(20% + 5px);
   }
 }
 
