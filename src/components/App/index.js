@@ -19,7 +19,8 @@ import Stoplight from '@components/Stoplight';
 import './index.scss';
 
 const MESSAGE_GET_BEAMS = '{get-beam-states:1}';
-const MESSAGE_START_RACE = '{racing:1}';
+const MESSAGE_RESET_SOLENOIDS = '{retract-solenoids:0}';
+const MESSAGE_RETRACT_SOLENOIDS = '{retract-solenoids:1}';
 
 function RenderStoplight(status) {
   return (<Stoplight status={status} />);
@@ -105,11 +106,12 @@ const App = (props) => {
     setCountdown(0);
     setIsCountingDown(false);
     setIsRacing(true);
-    sendMessage(MESSAGE_START_RACE);
+    sendMessage(MESSAGE_RETRACT_SOLENOIDS);
   };
 
   const cleanupRacingInterval = () => {
     console.log('cleanup race');
+    sendMessage(MESSAGE_RESET_SOLENOIDS);
     clearInterval(racingInterval);
     setIsRacing(false);
     setTimeElapsed(0);
