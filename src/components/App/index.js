@@ -8,16 +8,15 @@ import useSound from 'use-sound';
 import { WAKE_ARDUINO } from '@arduino/arduino-base/ReactSerial/ArduinoConstants';
 import IPC from '@arduino/arduino-base/ReactSerial/IPCMessages';
 import withSerialCommunication from '@arduino/arduino-base/ReactSerial/SerialHOC';
-import AttractScreen from '@components/AttractScreen';
-import Lane from '@components/Lane';
-import Stoplight from '@components/Stoplight';
-
 import Song from '@audio/song.wav';
 import StoplightGo from '@audio/stoplight-go.wav';
 import StoplightWait from '@audio/stoplight-wait.wav';
+import AttractScreen from '@components/AttractScreen';
+import Lane from '@components/Lane';
+import PreviousTimerDisplay from '@components/PreviousTimerDisplay';
+import Stoplight from '@components/Stoplight';
 
 import './index.scss';
-import PreviousTimerDisplay from '../PreviousTimerDisplay';
 
 const MESSAGE_GET_BEAMS = '{get-beam-states:1}';
 const MESSAGE_START_RACE = '{racing:1}';
@@ -33,7 +32,6 @@ const App = (props) => {
 
   const [countdown, setCountdown] = useState(0);
   const [countdownInterval, setCountdownInterval] = useState(null);
-  const [dev] = useState(false);
   const [handshake, setHandshake] = useState(false);
   const [isAppIdle, setIsAppIdle] = useState(true);
   const [isCountingDown, setIsCountingDown] = useState(false);
@@ -254,7 +252,7 @@ const App = (props) => {
     if (!isAppIdle) sendMessage(MESSAGE_GET_BEAMS);
   }, [isAppIdle]);
 
-  if (!handshake && !dev) {
+  if (!handshake) {
     return (
       <div className="loading">
         <Wave effect="fadeOut" text="Loading..." />
@@ -262,7 +260,7 @@ const App = (props) => {
     );
   }
 
-  if (isAppIdle && !dev) return <AttractScreen callback={() => setIsAppIdle(false)} />;
+  if (isAppIdle) return <AttractScreen callback={() => setIsAppIdle(false)} />;
 
   return (
     <>
