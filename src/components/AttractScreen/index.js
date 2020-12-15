@@ -14,7 +14,7 @@ const AttractScreen = (props) => {
       onClick={() => callback()}
       type="button"
     >
-      <div className="x" id="attractContainer">
+      <div className="bubble-container x">
         <img
           alt="Start Button"
           className="y"
