@@ -15,6 +15,7 @@ import AttractScreen from '@components/AttractScreen';
 import Lane from '@components/Lane';
 import PreviousTimerDisplay from '@components/PreviousTimerDisplay';
 import Stoplight from '@components/Stoplight';
+import useInterval from '@hooks/useInterval';
 
 import './index.scss';
 
@@ -31,6 +32,7 @@ const App = (props) => {
     sendData, setOnDataCallback, startIpcCommunication, stopIpcCommunication,
   } = props;
 
+  const [appTimeout, setAppTimeout] = useState(null);
   const [countdown, setCountdown] = useState(0);
   const [countdownInterval, setCountdownInterval] = useState(null);
   const [handshake, setHandshake] = useState(false);
@@ -94,8 +96,6 @@ const App = (props) => {
 
     setPingArduinoStatus(true);
     sendData(JSON.stringify(WAKE_ARDUINO));
-
-    setTimeout(() => pingArduino(), 5000);
   };
 
   /** ***************** App functions ******************* */
@@ -157,11 +157,15 @@ const App = (props) => {
     setTrack3Placement(0);
   };
 
+  /** ***************** useInterval hooks ***************** */
+  useInterval(() => {
+    pingArduino();
+  }, 5000);
+
   /** ***************** useEffect hooks ******************* */
 
   useEffect(() => {
     setOnDataCallback((data) => onSerialData(data, setSerialData));
-    pingArduino();
   }, []);
 
   useEffect(() => {
@@ -170,50 +174,44 @@ const App = (props) => {
 
       setPingArduinoStatus(false);
       setRefreshPortCount(0);
-    }
+    } else if (handshake) {
+      clearTimeout(appTimeout);
+      setAppTimeout(setTimeout(() => setIsAppIdle(true), 15000));
 
-    if (handshake) {
-      if (serialData.message === 'start-button-pressed' && !isAppIdle
-        && !isRacing && countdown === 0 && !isCountingDown
-        && (track1Start || track2Start || track3Start)
-      ) {
-        setTrack1Finish(0);
-        setTrack2Finish(0);
-        setTrack3Finish(0);
+      if (isAppIdle) setIsAppIdle(false);
+      else {
+        if (serialData.message === 'start-button-pressed' && !isAppIdle
+          && !isRacing && countdown === 0 && !isCountingDown
+          && (track1Start || track2Start || track3Start)
+        ) {
+          setTrack1Finish(0);
+          setTrack2Finish(0);
+          setTrack3Finish(0);
 
-        setIsCountingDown(true);
-        setCountdownInterval(setInterval(() => {
-          setCountdown((prevState) => prevState + 1);
-        }, 1000));
+          setIsCountingDown(true);
+          setCountdownInterval(setInterval(() => {
+            setCountdown((prevState) => prevState + 1);
+          }, 1000));
 
-        resetPlacements();
-      }
+          resetPlacements();
+        }
 
-      if (serialData.message === 'track-1-start') {
-        setTrack1Start(serialData.value === '1');
-        resetPlacements();
-      }
-
-      if (serialData.message === 'track-2-start') {
-        setTrack2Start(serialData.value === '1');
-        resetPlacements();
-      }
-
-      if (serialData.message === 'track-3-start') {
-        setTrack3Start(serialData.value === '1');
-        resetPlacements();
-      }
-
-      if (serialData.message === 'track-1-finish' && track1Finish === 0) {
-        setTrack1Finish(timeElapsed);
-      }
-
-      if (serialData.message === 'track-2-finish' && track2Finish === 0) {
-        setTrack2Finish(timeElapsed);
-      }
-
-      if (serialData.message === 'track-3-finish' && track3Finish === 0) {
-        setTrack3Finish(timeElapsed);
+        if (serialData.message === 'track-1-start') {
+          setTrack1Start(serialData.value === '1');
+          resetPlacements();
+        } else if (serialData.message === 'track-2-start') {
+          setTrack2Start(serialData.value === '1');
+          resetPlacements();
+        } else if (serialData.message === 'track-3-start') {
+          setTrack3Start(serialData.value === '1');
+          resetPlacements();
+        } else if (serialData.message === 'track-1-finish' && track1Finish === 0) {
+          setTrack1Finish(timeElapsed);
+        } else if (serialData.message === 'track-2-finish' && track2Finish === 0) {
+          setTrack2Finish(timeElapsed);
+        } else if (serialData.message === 'track-3-finish' && track3Finish === 0) {
+          setTrack3Finish(timeElapsed);
+        }
       }
     }
   }, [serialData]);
@@ -227,7 +225,7 @@ const App = (props) => {
       setRacingInterval(setInterval(() => {
         const msElapsed = Date.now() - startTime;
         setTimeElapsed(msElapsed);
-      }, 50));
+      }, 10));
     }
   }, [isRacing]);
 
