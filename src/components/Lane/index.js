@@ -85,7 +85,7 @@ const Lane = (props) => {
       (((ms - (secondsTime * 1000)) - (firstTime * 100))) / 10,
     );
     const thirdTime = Math.floor(
-      (((((ms - (secondsTime * 1000)) - (firstTime * 100)) - (secondTime * 10)) / 10)),
+      ((((ms - (secondsTime * 1000)) - (firstTime * 100)) - (secondTime * 10))),
     );
 
     setSeconds(secondsTime);

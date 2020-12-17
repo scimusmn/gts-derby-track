@@ -9,7 +9,7 @@ function RenderDisplay(time) {
       (((time - (secondsTime * 1000)) - (firstTime * 100))) / 10,
     );
     const thirdTime = Math.floor(
-      (((((time - (secondsTime * 1000)) - (firstTime * 100)) - (secondTime * 10)) / 10)),
+      ((((time - (secondsTime * 1000)) - (firstTime * 100)) - (secondTime * 10))),
     );
 
     return (
