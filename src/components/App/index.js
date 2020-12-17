@@ -100,11 +100,20 @@ const App = (props) => {
 
   /** ***************** App functions ******************* */
 
-  const cleanupCountdown = () => {
+  const appTimeoutReset = () => {
+    clearTimeout(appTimeout);
+    setAppTimeout(setTimeout(() => setIsAppIdle(true), 15000));
+  };
+
+  const stopLightReset = () => {
     clearInterval(countdownInterval);
     setCountdownInterval(null);
     setCountdown(0);
     setIsCountingDown(false);
+  };
+
+  const cleanupCountdown = () => {
+    stopLightReset();
     setIsRacing(true);
     sendMessage(MESSAGE_RETRACT_SOLENOIDS);
   };
@@ -115,6 +124,12 @@ const App = (props) => {
     clearInterval(racingInterval);
     setIsRacing(false);
     setTimeElapsed(0);
+    appTimeoutReset();
+
+    setTrack1Finish(0);
+    setTrack2Finish(0);
+    setTrack3Finish(0);
+
     song.stop();
 
     const results = [
@@ -151,16 +166,33 @@ const App = (props) => {
     setTrack3PreviousFinish(track3Finish);
   };
 
-  const resetPlacements = () => {
-    setTrack1Placement(0);
-    setTrack2Placement(0);
-    setTrack3Placement(0);
+  const resetTrackTimes = (trackNumber) => {
+    switch (trackNumber) {
+      case 1:
+        setTrack1Finish(0);
+        setTrack1Placement(0);
+        break;
+      case 2:
+        setTrack2Finish(0);
+        setTrack2Placement(0);
+        break;
+      case 3:
+        setTrack3Finish(0);
+        setTrack3Placement(0);
+        break;
+      default:
+        setTrack1Finish(0);
+        setTrack2Finish(0);
+        setTrack3Finish(0);
+        setTrack1Placement(0);
+        setTrack2Placement(0);
+        setTrack3Placement(0);
+        break;
+    }
   };
 
   /** ***************** useInterval hooks ***************** */
-  useInterval(() => {
-    pingArduino();
-  }, 5000);
+  useInterval(() => pingArduino(), 5000);
 
   /** ***************** useEffect hooks ******************* */
 
@@ -175,43 +207,39 @@ const App = (props) => {
       setPingArduinoStatus(false);
       setRefreshPortCount(0);
     } else if (handshake) {
-      clearTimeout(appTimeout);
-      setAppTimeout(setTimeout(() => setIsAppIdle(true), 15000));
+      appTimeoutReset();
 
-      if (isAppIdle) setIsAppIdle(false);
-      else {
-        if (serialData.message === 'start-button-pressed' && !isAppIdle
-          && !isRacing && countdown === 0 && !isCountingDown
-          && (track1Start || track2Start || track3Start)
-        ) {
-          setTrack1Finish(0);
-          setTrack2Finish(0);
-          setTrack3Finish(0);
+      if (isAppIdle) {
+        setIsAppIdle(false);
+        resetTrackTimes();
+      } else if (serialData.message === 'start-button-pressed' && !isAppIdle
+        && !isRacing && countdown === 0 && !isCountingDown
+        && (track1Start || track2Start || track3Start)
+      ) {
+        sendMessage(MESSAGE_GET_BEAMS);
+        resetTrackTimes();
 
-          setIsCountingDown(true);
-          setCountdownInterval(setInterval(() => {
-            setCountdown((prevState) => prevState + 1);
-          }, 1000));
+        setIsCountingDown(true);
+        setCountdownInterval(setInterval(() => {
+          setCountdown((prevState) => prevState + 1);
+        }, 1000));
+      }
 
-          resetPlacements();
-        }
-
-        if (serialData.message === 'track-1-start') {
-          setTrack1Start(serialData.value === '1');
-          resetPlacements();
-        } else if (serialData.message === 'track-2-start') {
-          setTrack2Start(serialData.value === '1');
-          resetPlacements();
-        } else if (serialData.message === 'track-3-start') {
-          setTrack3Start(serialData.value === '1');
-          resetPlacements();
-        } else if (serialData.message === 'track-1-finish' && track1Finish === 0) {
-          setTrack1Finish(timeElapsed);
-        } else if (serialData.message === 'track-2-finish' && track2Finish === 0) {
-          setTrack2Finish(timeElapsed);
-        } else if (serialData.message === 'track-3-finish' && track3Finish === 0) {
-          setTrack3Finish(timeElapsed);
-        }
+      if (serialData.message === 'track-1-start' && !isRacing) {
+        setTrack1Start(serialData.value === '1');
+        resetTrackTimes(1);
+      } else if (serialData.message === 'track-2-start' && !isRacing) {
+        setTrack2Start(serialData.value === '1');
+        resetTrackTimes(2);
+      } else if (serialData.message === 'track-3-start' && !isRacing) {
+        setTrack3Start(serialData.value === '1');
+        resetTrackTimes(3);
+      } else if (serialData.message === 'track-1-finish' && track1Finish === 0 && track1Start) {
+        setTrack1Finish(timeElapsed);
+      } else if (serialData.message === 'track-2-finish' && track2Finish === 0 && track2Start) {
+        setTrack2Finish(timeElapsed);
+      } else if (serialData.message === 'track-3-finish' && track3Finish === 0 && track3Start) {
+        setTrack3Finish(timeElapsed);
       }
     }
   }, [serialData]);
@@ -225,27 +253,38 @@ const App = (props) => {
       setRacingInterval(setInterval(() => {
         const msElapsed = Date.now() - startTime;
         setTimeElapsed(msElapsed);
-      }, 10));
+      }, 50));
     }
   }, [isRacing]);
 
   useEffect(() => {
-    if (timeElapsed >= 10000) cleanupRacingInterval();
-  }, [timeElapsed]);
+    const track1Finished = (track1Start) ? track1Finish > 0 : true;
+    const track2Finished = (track2Start) ? track2Finish > 0 : true;
+    const track3Finished = (track3Start) ? track3Finish > 0 : true;
+
+    if (timeElapsed >= 10000 || (track1Finished && track2Finished && track3Finished)) {
+      cleanupRacingInterval();
+    }
+  }, [timeElapsed, track1Finish, track2Finish, track3Finish]);
 
   useEffect(() => {
-    if (countdown === 1) {
-      stoplightWait.stop();
-      playStoplightWait();
-    }
+    if (track1Start || track2Start || track3Start) {
+      if (countdown === 1) {
+        stoplightWait.stop();
+        playStoplightWait();
+      }
 
-    if (countdown === 2) {
-      stoplightGo.stop();
-      playStoplightGo();
-    }
+      if (countdown === 2) {
+        stoplightGo.stop();
+        playStoplightGo();
+      }
 
-    if (countdown > 2) cleanupCountdown();
-    setStoplightComponent(RenderStoplight(countdown));
+      if (countdown > 2) cleanupCountdown();
+      setStoplightComponent(RenderStoplight(countdown));
+    } else {
+      stopLightReset();
+      setStoplightComponent(RenderStoplight(0));
+    }
   }, [countdown]);
 
   useEffect(() => {
