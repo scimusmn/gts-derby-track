@@ -1,4 +1,10 @@
-import { navigate } from 'gatsby';
+const NotFoundPage = () => {
+  const isBrowser = typeof window !== 'undefined';
+  if (isBrowser) {
+    window.location.replace('/');
+  }
 
-const NotFoundPage = () => navigate('/');
+  return null;
+};
+
 export default NotFoundPage;
