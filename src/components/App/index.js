@@ -102,7 +102,8 @@ const App = (props) => {
 
   const appTimeoutReset = () => {
     clearTimeout(appTimeout);
-    setAppTimeout(setTimeout(() => setIsAppIdle(true), 15000));
+    // Set 5 minute timeout for app
+    setAppTimeout(setTimeout(() => setIsAppIdle(true), 300000));
   };
 
   const stopLightReset = () => {
@@ -119,7 +120,6 @@ const App = (props) => {
   };
 
   const cleanupRacingInterval = () => {
-    console.log('cleanup race');
     sendMessage(MESSAGE_RESET_SOLENOIDS);
     clearInterval(racingInterval);
     setIsRacing(false);
