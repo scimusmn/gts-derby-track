@@ -1,0 +1,13 @@
+# This file is used by Docker to ignore specific files and directories
+# When using the COPY operation, helping us keep our Docker image size small
+.cache
+.dockerignore
+.DS_Store
+.git
+.gitmodules 
+.vscode
+
+Dockerfile
+node_modules
+public
+src/Arduino/arduino-base/.git

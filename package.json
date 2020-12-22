@@ -57,6 +57,8 @@
     "depcheck": "node -r @babel/register scripts/depcheck.js",
     "dev": "gatsby develop",
     "develop": "gatsby develop --port 3000",
+    "docker:build": "docker build -t gts-derby-track .",
+    "docker:run": "docker run -d -p 3000:3000 gts-derby-track",
     "generate:audio": "bash scripts/generate-audio.sh 440",
     "install:arduino-base": "node scripts/install-arduino-base.js",
     "lint": "npm-run-all lint:*",
