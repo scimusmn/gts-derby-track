@@ -220,6 +220,7 @@ const App = (props) => {
         resetTrackTimes();
 
         setIsCountingDown(true);
+        setCountdown(1);
         setCountdownInterval(setInterval(() => {
           setCountdown((prevState) => prevState + 1);
         }, 1000));
