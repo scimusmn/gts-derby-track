@@ -13,6 +13,7 @@ import StoplightGo from '@audio/stoplight-go.wav';
 import StoplightWait from '@audio/stoplight-wait.wav';
 import AttractScreen from '@components/AttractScreen';
 import Lane from '@components/Lane';
+import MessageBlock from '@components/MessageBlock';
 import PreviousTimerDisplay from '@components/PreviousTimerDisplay';
 import Stoplight from '@components/Stoplight';
 import useInterval from '@hooks/useInterval';
@@ -39,6 +40,8 @@ const App = (props) => {
   const [isAppIdle, setIsAppIdle] = useState(true);
   const [isCountingDown, setIsCountingDown] = useState(false);
   const [isRacing, setIsRacing] = useState(false);
+  const [messageTimeout, setMessageTimeout] = useState(null);
+  const [messageVisibility, setMessageVisibility] = useState(false);
   const [pingArduinoStatus, setPingArduinoStatus] = useState(false);
   const [racingInterval, setRacingInterval] = useState(null);
   const [refreshPortCount, setRefreshPortCount] = useState(0);
@@ -117,6 +120,11 @@ const App = (props) => {
     stopLightReset();
     setIsRacing(true);
     sendMessage(MESSAGE_RETRACT_SOLENOIDS);
+  };
+
+  const cleanupMessageTimeout = () => {
+    setMessageVisibility(false);
+    clearTimeout(messageTimeout);
   };
 
   const cleanupRacingInterval = () => {
@@ -213,27 +221,38 @@ const App = (props) => {
         setIsAppIdle(false);
         resetTrackTimes();
       } else if (serialData.message === 'start-button-pressed' && !isAppIdle
-        && !isRacing && countdown === 0 && !isCountingDown
-        && (track1Start || track2Start || track3Start)
-      ) {
-        sendMessage(MESSAGE_GET_BEAMS);
-        resetTrackTimes();
+        && !isRacing && countdown === 0 && !isCountingDown) {
+        if (track1Start || track2Start || track3Start) {
+          sendMessage(MESSAGE_GET_BEAMS);
+          resetTrackTimes();
 
-        setIsCountingDown(true);
-        setCountdown(1);
-        setCountdownInterval(setInterval(() => {
-          setCountdown((prevState) => prevState + 1);
-        }, 1000));
+          setIsCountingDown(true);
+          setCountdown(1);
+          setCountdownInterval(setInterval(() => {
+            setCountdown((prevState) => prevState + 1);
+          }, 1000));
+        } else {
+          setMessageVisibility(true);
+          setMessageTimeout(setTimeout(() => {
+            setMessageVisibility(false);
+          }, 5000));
+        }
       }
 
       if (serialData.message === 'track-1-start' && !isRacing) {
         setTrack1Start(serialData.value === '1');
+        // Set the message visibility to false because we have at least 1 car on the tracks
+        cleanupMessageTimeout();
         resetTrackTimes(1);
       } else if (serialData.message === 'track-2-start' && !isRacing) {
         setTrack2Start(serialData.value === '1');
+        // Set the message visibility to false because we have at least 1 car on the tracks
+        cleanupMessageTimeout();
         resetTrackTimes(2);
       } else if (serialData.message === 'track-3-start' && !isRacing) {
         setTrack3Start(serialData.value === '1');
+        // Set the message visibility to false because we have at least 1 car on the tracks
+        cleanupMessageTimeout();
         resetTrackTimes(3);
       } else if (serialData.message === 'track-1-finish' && track1Finish === 0 && track1Start) {
         setTrack1Finish(timeElapsed);
@@ -306,7 +325,10 @@ const App = (props) => {
     <>
       <Helmet>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"
+        />
       </Helmet>
       <Container className="app" fluid>
         <Row className="no-gutters">
@@ -365,6 +387,10 @@ const App = (props) => {
             {stoplightComponent}
           </div>
         </Row>
+        <MessageBlock
+          isVisible={messageVisibility}
+          message="At least one car is required to race. Please place a car on the track and try again."
+        />
       </Container>
     </>
   );
