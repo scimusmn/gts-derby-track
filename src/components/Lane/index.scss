@@ -10,31 +10,31 @@
     span {
       color: red;
       font-family: 'DigitalDisplay', monospace;
-      font-size: 6.4em;
+      font-size: 4.3em;
       font-weight: bold;
       position: absolute;
       text-align: center;
-      top: 45px;
+      top: 29px;
       width: 40px;
 
       &.seconds {
-        left: 55px;
+        left: 48px;
       }
 
       &.decimal {
-        left: 95px;
+        left: 75px;
       }
 
       &.first {
-        left: 133px;
+        left: 99px;
       }
 
       &.second {
-        left: 186px;
+        left: 134px;
       }
 
       &.third {
-        left: 238px;
+        left: 168px;
       }
     }
   }
