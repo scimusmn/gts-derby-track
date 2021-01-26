@@ -1,19 +1,19 @@
-#include "arduino-base/Libraries/SerialController.hpp"
 #include "arduino-base/Libraries/Button.h"
+#include "arduino-base/Libraries/SerialController.hpp"
 
-//pin assignments 40ft EXHIBIT
-// const int solenoid_pin = 6;
-// const int start_pins[] = {12, 11, 10};
-// const int finish_pins[] = {2, 3, 4};
-// const int start_btn_pin = 8;
-// const int start_btn_led = 9;
+// pin assignments 40ft EXHIBIT
+const int solenoid_pin = 6;
+const int start_pins[] = {10, 11, 12};
+const int finish_pins[] = {4, 3, 2};
+const int start_btn_pin = 8;
+const int start_btn_led = 9;
 
 // pin assignments MINI MARBLE TRACK
-const int solenoid_pin = 10;
-const int start_pins[] = {6, 7, 8};
-const int finish_pins[] = {2, 3, 4};
-const int start_btn_pin = 12;
-const int start_btn_led = 13;
+// const int solenoid_pin = 10;
+// const int start_pins[] = {6, 7, 8};
+// const int finish_pins[] = {2, 3, 4};
+// const int start_btn_pin = 12;
+// const int start_btn_led = 13;
 
 SerialController serialController;
 Button start_btn;
@@ -28,13 +28,12 @@ boolean track1_start_state = false;
 boolean track2_start_state = false;
 boolean track3_start_state = false;
 
-void setup()
-{
+void setup() {
   long baudRate = 115200;
   pinMode(solenoid_pin, OUTPUT);
   pinMode(start_btn_led, OUTPUT);
 
-  //start beam break sensors
+  // start beam break sensors
   track1_start.setup(start_pins[0], [](int state) {
     serialController.sendMessage("track-1-start", state);
     track1_start_state = state;
@@ -47,7 +46,7 @@ void setup()
     serialController.sendMessage("track-3-start", state);
     track3_start_state = state;
   });
-  //finish beam break sensors
+  // finish beam break sensors
   track1_finish.setup(finish_pins[0], [](int state) {
     serialController.sendMessage("track-1-finish", state);
   });
@@ -59,13 +58,13 @@ void setup()
   });
 
   start_btn.setup(start_btn_pin, [](int state) {
-    if (state == 1)
-    {
+    if (state == 1) {
       serialController.sendMessage("start-button-pressed", "1");
     }
   });
 
-  track1_finish.debounce = 2; //may need adjustmets. Default 20ms doesn't work.
+  // may need adjustmets. Default 20ms doesn't work.
+  track1_finish.debounce = 2;
   track2_finish.debounce = 2;
   track3_finish.debounce = 2;
 
@@ -74,8 +73,7 @@ void setup()
   digitalWrite(start_btn_led, HIGH);
 }
 
-void loop()
-{
+void loop() {
   // update SerialController and check for new data
   serialController.update();
 
@@ -88,32 +86,28 @@ void loop()
   track3_start.update();
 }
 
-void onParse(char *message, char *value)
-{
-  if (strcmp(message, "wake-arduino") == 0 && strcmp(value, "1") == 0)
-  {
+void onParse(char *message, char *value) {
+  if (strcmp(message, "wake-arduino") == 0 && strcmp(value, "1") == 0) {
     serialController.sendMessage("arduino-ready", "1");
   }
 
-  else if (strcmp(message, "start-button-lit") == 0)
-  {
+  else if (strcmp(message, "start-button-lit") == 0) {
     if (atoi(value) == 0)
-      digitalWrite(start_btn_led, LOW); //Turn the button LED OFF
+      digitalWrite(start_btn_led, LOW);  // Turn the button LED OFF
     if (atoi(value) == 1)
-      digitalWrite(start_btn_led, HIGH); //Turn the button LED ON.
+      digitalWrite(start_btn_led, HIGH);  // Turn the button LED ON.
   }
 
-  else if (strcmp(message, "retract-solenoids") == 0)
-  {
+  else if (strcmp(message, "retract-solenoids") == 0) {
     if (atoi(value) == 0)
-      digitalWrite(solenoid_pin, LOW); //solenoids spring up, stopping cars.
+      digitalWrite(solenoid_pin, LOW);  // solenoids spring up, stopping cars.
+
     if (atoi(value) == 1)
-      digitalWrite(solenoid_pin, HIGH); //solenoids retract, releasing the cars.
+      digitalWrite(solenoid_pin, HIGH);  // solenoids retract, releasing cars.
   }
 
-  //spit out all states on the racetrack.
-  else if (strcmp(message, "get-beam-states") == 0)
-  {
+  // spit out all states on the racetrack.
+  else if (strcmp(message, "get-beam-states") == 0) {
     serialController.sendMessage("track-1-start", track1_start_state);
     serialController.sendMessage("track-2-start", track2_start_state);
     serialController.sendMessage("track-3-start", track3_start_state);
@@ -121,9 +115,7 @@ void onParse(char *message, char *value)
     serialController.sendMessage("track-1-finish", track1_finish.state);
     serialController.sendMessage("track-2-finish", track2_finish.state);
     serialController.sendMessage("track-3-finish", track3_finish.state);
-  }
-  else
-  {
+  } else {
     // helpfully alert us if we've sent something wrong :)
     serialController.sendMessage("unknown-command", "1");
   }
