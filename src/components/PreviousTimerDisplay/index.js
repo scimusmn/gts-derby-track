@@ -25,11 +25,11 @@ function RenderDisplay(time) {
 
   return (
     <div className="timer">
-      <span className="seconds">0</span>
+      <span className="seconds">-</span>
       <span className="decimal">.</span>
-      <span className="first">0</span>
-      <span className="second">0</span>
-      <span className="third">0</span>
+      <span className="first">-</span>
+      <span className="second">-</span>
+      <span className="third">-</span>
     </div>
   );
 }

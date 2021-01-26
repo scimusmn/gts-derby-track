@@ -113,7 +113,7 @@ const Lane = (props) => {
 
   return (
     <div className="lane-container">
-      <div className={(active && isRacing) ? 'timer' : 'timer'}>
+      <div className={(active && isRacing) ? 'timer' : 'd-none timer'}>
         <span className="seconds">{seconds}</span>
         <span className="decimal">.</span>
         <span className="first">{first}</span>
