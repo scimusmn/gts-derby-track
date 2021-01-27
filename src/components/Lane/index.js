@@ -66,7 +66,8 @@ function RenderRibbon(placement) {
 
 const Lane = (props) => {
   const {
-    finish, laneNumber, isActive, isRacing, placement, time,
+    displayRibbons, finish, laneNumber, isActive,
+    isRacing, placement, time,
   } = props;
 
   const [active, setActive] = useState(false);
@@ -113,7 +114,7 @@ const Lane = (props) => {
 
   return (
     <div className="lane-container">
-      <div className={(active && isRacing) ? 'timer' : 'd-none timer'}>
+      <div className={(active && (isRacing || displayRibbons)) ? 'timer' : 'd-none timer'}>
         <span className="seconds">{seconds}</span>
         <span className="decimal">.</span>
         <span className="first">{first}</span>
@@ -127,6 +128,7 @@ const Lane = (props) => {
 };
 
 Lane.propTypes = {
+  displayRibbons: PropTypes.bool.isRequired,
   finish: PropTypes.number.isRequired,
   isActive: PropTypes.bool.isRequired,
   isRacing: PropTypes.bool.isRequired,

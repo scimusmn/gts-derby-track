@@ -377,7 +377,7 @@ const App = (props) => {
             <div
               className={(displayRibbons) ? 'ribbon-countdown' : 'd-none ribbon-countdown'}
             >
-              Congratulations!! Race track will reset in
+              Race track will reset in
               {' '}
               {10 - ribbonCountdown}
               ...
@@ -385,7 +385,8 @@ const App = (props) => {
             <Row className="no-gutters">
               <Col>
                 <Lane
-                  finish={track1Finish}
+                  displayRibbons={displayRibbons}
+                  finish={(displayRibbons) ? track1PreviousFinish : track1Finish}
                   isActive={track1Start}
                   isRacing={isRacing}
                   laneNumber={1}
@@ -395,7 +396,8 @@ const App = (props) => {
               </Col>
               <Col>
                 <Lane
-                  finish={track2Finish}
+                  displayRibbons={displayRibbons}
+                  finish={(displayRibbons) ? track2PreviousFinish : track2Finish}
                   isActive={track2Start}
                   isRacing={isRacing}
                   laneNumber={2}
@@ -405,7 +407,8 @@ const App = (props) => {
               </Col>
               <Col>
                 <Lane
-                  finish={track3Finish}
+                  displayRibbons={displayRibbons}
+                  finish={(displayRibbons) ? track3PreviousFinish : track3Finish}
                   isActive={track3Start}
                   isRacing={isRacing}
                   laneNumber={3}
