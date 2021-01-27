@@ -35,13 +35,13 @@ function RenderDisplay(time) {
 }
 
 const PreviousTimerDisplay = (props) => {
-  const { finishTime } = props;
+  const { displayRibbons, finishTime } = props;
 
   const [timerDisplay, setTimerDisplay] = useState(null);
 
   useEffect(() => {
-    setTimerDisplay(RenderDisplay(finishTime));
-  }, [finishTime]);
+    if (!displayRibbons) setTimerDisplay(RenderDisplay(finishTime));
+  }, [displayRibbons, finishTime]);
 
   return (
     <>{timerDisplay}</>
@@ -49,6 +49,7 @@ const PreviousTimerDisplay = (props) => {
 };
 
 PreviousTimerDisplay.propTypes = {
+  displayRibbons: PropTypes.bool.isRequired,
   finishTime: PropTypes.number.isRequired,
 };
 

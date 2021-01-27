@@ -75,12 +75,8 @@ const App = (props) => {
     setData({ message, value });
   };
 
-  const sendMessage = (msg) => {
-    console.log('sendMessage:', msg);
-
-    // This is where we pass it through our HOC method to Stele, which passes to Serial device.
-    sendData(msg);
-  };
+  // Pass through our HOC method to Stele, which passes to Serial device
+  const sendMessage = (msg) => sendData(msg);
 
   const refreshPorts = () => {
     if (refreshPortCount === 3) {
@@ -106,9 +102,9 @@ const App = (props) => {
 
   /** ***************** App functions ******************* */
 
+  // Set 5 minute timeout for app
   const appTimeoutReset = () => {
     clearTimeout(appTimeout);
-    // Set 5 minute timeout for app
     setAppTimeout(setTimeout(() => setIsAppIdle(true), 300000));
   };
 
@@ -119,12 +115,38 @@ const App = (props) => {
     setIsCountingDown(false);
   };
 
+  const resetTrackTimes = (trackNumber) => {
+    switch (trackNumber) {
+      case 1:
+        setTrack1Finish(0);
+        setTrack1Placement(0);
+        break;
+      case 2:
+        setTrack2Finish(0);
+        setTrack2Placement(0);
+        break;
+      case 3:
+        setTrack3Finish(0);
+        setTrack3Placement(0);
+        break;
+      default:
+        setTrack1Finish(0);
+        setTrack2Finish(0);
+        setTrack3Finish(0);
+        setTrack1Placement(0);
+        setTrack2Placement(0);
+        setTrack3Placement(0);
+        break;
+    }
+  };
+
   const cleanupCountdown = () => {
     stopLightReset();
     setIsRacing(true);
     sendMessage(MESSAGE_RETRACT_SOLENOIDS);
   };
 
+  // Set the message visibility to false because we have at least 1 car on the tracks
   const cleanupMessageTimeout = () => {
     setMessageVisibility(false);
     clearTimeout(messageTimeout);
@@ -134,9 +156,7 @@ const App = (props) => {
     clearInterval(ribbonInterval);
     setDisplayRibbons(false);
     setRibbonCountdown(0);
-    setTrack1Placement(0);
-    setTrack2Placement(0);
-    setTrack3Placement(0);
+    resetTrackTimes();
     sendMessage(MESSAGE_GET_BEAMS);
   };
 
@@ -146,10 +166,6 @@ const App = (props) => {
     setIsRacing(false);
     setTimeElapsed(0);
     appTimeoutReset();
-
-    setTrack1Finish(0);
-    setTrack2Finish(0);
-    setTrack3Finish(0);
 
     song.stop();
 
@@ -182,41 +198,11 @@ const App = (props) => {
       }
     }
 
+    if (track1Finish > 0 || track2Finish > 0 || track3Finish) setDisplayRibbons(true);
+
     setTrack1PreviousFinish(track1Finish);
     setTrack2PreviousFinish(track2Finish);
     setTrack3PreviousFinish(track3Finish);
-
-    if (track1Finish > 0 || track2Finish > 0 || track3Finish) {
-      setDisplayRibbons(true);
-      setRibbonInterval(setInterval(() => {
-        setRibbonCountdown((prevState) => prevState + 1);
-      }, 1000));
-    }
-  };
-
-  const resetTrackTimes = (trackNumber) => {
-    switch (trackNumber) {
-      case 1:
-        setTrack1Finish(0);
-        setTrack1Placement(0);
-        break;
-      case 2:
-        setTrack2Finish(0);
-        setTrack2Placement(0);
-        break;
-      case 3:
-        setTrack3Finish(0);
-        setTrack3Placement(0);
-        break;
-      default:
-        setTrack1Finish(0);
-        setTrack2Finish(0);
-        setTrack3Finish(0);
-        setTrack1Placement(0);
-        setTrack2Placement(0);
-        setTrack3Placement(0);
-        break;
-    }
   };
 
   /** ***************** useInterval hooks ***************** */
@@ -261,17 +247,14 @@ const App = (props) => {
 
       if (serialData.message === 'track-1-start' && !isRacing && !displayRibbons) {
         setTrack1Start(serialData.value === '1');
-        // Set the message visibility to false because we have at least 1 car on the tracks
         cleanupMessageTimeout();
         resetTrackTimes(1);
       } else if (serialData.message === 'track-2-start' && !isRacing && !displayRibbons) {
         setTrack2Start(serialData.value === '1');
-        // Set the message visibility to false because we have at least 1 car on the tracks
         cleanupMessageTimeout();
         resetTrackTimes(2);
       } else if (serialData.message === 'track-3-start' && !isRacing && !displayRibbons) {
         setTrack3Start(serialData.value === '1');
-        // Set the message visibility to false because we have at least 1 car on the tracks
         cleanupMessageTimeout();
         resetTrackTimes(3);
       } else if (serialData.message === 'track-1-finish' && track1Finish === 0 && track1Start) {
@@ -284,6 +267,7 @@ const App = (props) => {
     }
   }, [serialData]);
 
+  // Start counting the total druration of the race
   useEffect(() => {
     if (isRacing) {
       song.stop();
@@ -307,6 +291,7 @@ const App = (props) => {
     }
   }, [timeElapsed, track1Finish, track2Finish, track3Finish]);
 
+  // Update stoplight state
   useEffect(() => {
     if (track1Start || track2Start || track3Start) {
       if (countdown === 1) {
@@ -327,10 +312,21 @@ const App = (props) => {
     }
   }, [countdown]);
 
+  // Countdown the ribbon display
   useEffect(() => {
     if (ribbonCountdown > 9) cleanupRibbonInterval();
   }, [ribbonCountdown]);
 
+  // Set the delay for the ribbon display
+  useEffect(() => {
+    if (!isRacing && (track1Finish > 0 || track2Finish > 0 || track3Finish)) {
+      setRibbonInterval(setInterval(() => {
+        setRibbonCountdown((prevState) => prevState + 1);
+      }, 1000));
+    }
+  }, [isRacing]);
+
+  // Get track start state when app wakes up
   useEffect(() => {
     if (!isAppIdle) sendMessage(MESSAGE_GET_BEAMS);
   }, [isAppIdle]);
@@ -359,17 +355,26 @@ const App = (props) => {
           <div className="previous-race-column">
             <Row className="no-gutters">
               <Col>
-                <PreviousTimerDisplay finishTime={track1PreviousFinish} />
+                <PreviousTimerDisplay
+                  displayRibbons={displayRibbons}
+                  finishTime={track1PreviousFinish}
+                />
               </Col>
             </Row>
             <Row className="no-gutters">
               <Col>
-                <PreviousTimerDisplay finishTime={track2PreviousFinish} />
+                <PreviousTimerDisplay
+                  displayRibbons={displayRibbons}
+                  finishTime={track2PreviousFinish}
+                />
               </Col>
             </Row>
             <Row className="no-gutters">
               <Col>
-                <PreviousTimerDisplay finishTime={track3PreviousFinish} />
+                <PreviousTimerDisplay
+                  displayRibbons={displayRibbons}
+                  finishTime={track3PreviousFinish}
+                />
               </Col>
             </Row>
           </div>
