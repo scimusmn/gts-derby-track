@@ -81,6 +81,15 @@
     height: calc(100vh - 30px);
     position: relative;
     width: calc(60% - 10px);
+
+    .ribbon-countdown {
+      color: red;
+      font-size: 2em;
+      position: absolute;
+      text-align: center;
+      top: 0;
+      width: 100%;
+    }
   }
 
   .stoplight-column {

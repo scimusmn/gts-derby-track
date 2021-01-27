@@ -36,6 +36,7 @@ const App = (props) => {
   const [appTimeout, setAppTimeout] = useState(null);
   const [countdown, setCountdown] = useState(0);
   const [countdownInterval, setCountdownInterval] = useState(null);
+  const [displayRibbons, setDisplayRibbons] = useState(false);
   const [handshake, setHandshake] = useState(false);
   const [isAppIdle, setIsAppIdle] = useState(true);
   const [isCountingDown, setIsCountingDown] = useState(false);
@@ -45,6 +46,8 @@ const App = (props) => {
   const [pingArduinoStatus, setPingArduinoStatus] = useState(false);
   const [racingInterval, setRacingInterval] = useState(null);
   const [refreshPortCount, setRefreshPortCount] = useState(0);
+  const [ribbonCountdown, setRibbonCountdown] = useState(0);
+  const [ribbonInterval, setRibbonInterval] = useState(null);
   const [serialData, setSerialData] = useState({ message: '', value: '' });
   const [stoplightComponent, setStoplightComponent] = useState(null);
   const [timeElapsed, setTimeElapsed] = useState(0);
@@ -127,6 +130,16 @@ const App = (props) => {
     clearTimeout(messageTimeout);
   };
 
+  const cleanupRibbonInterval = () => {
+    clearInterval(ribbonInterval);
+    setDisplayRibbons(false);
+    setRibbonCountdown(0);
+    setTrack1Placement(0);
+    setTrack2Placement(0);
+    setTrack3Placement(0);
+    sendMessage(MESSAGE_GET_BEAMS);
+  };
+
   const cleanupRacingInterval = () => {
     sendMessage(MESSAGE_RESET_SOLENOIDS);
     clearInterval(racingInterval);
@@ -172,6 +185,13 @@ const App = (props) => {
     setTrack1PreviousFinish(track1Finish);
     setTrack2PreviousFinish(track2Finish);
     setTrack3PreviousFinish(track3Finish);
+
+    if (track1Finish > 0 || track2Finish > 0 || track3Finish) {
+      setDisplayRibbons(true);
+      setRibbonInterval(setInterval(() => {
+        setRibbonCountdown((prevState) => prevState + 1);
+      }, 1000));
+    }
   };
 
   const resetTrackTimes = (trackNumber) => {
@@ -221,7 +241,7 @@ const App = (props) => {
         setIsAppIdle(false);
         resetTrackTimes();
       } else if (serialData.message === 'start-button-pressed' && !isAppIdle
-        && !isRacing && countdown === 0 && !isCountingDown) {
+        && !isRacing && countdown === 0 && !isCountingDown && !displayRibbons) {
         if (track1Start || track2Start || track3Start) {
           sendMessage(MESSAGE_GET_BEAMS);
           resetTrackTimes();
@@ -239,17 +259,17 @@ const App = (props) => {
         }
       }
 
-      if (serialData.message === 'track-1-start' && !isRacing) {
+      if (serialData.message === 'track-1-start' && !isRacing && !displayRibbons) {
         setTrack1Start(serialData.value === '1');
         // Set the message visibility to false because we have at least 1 car on the tracks
         cleanupMessageTimeout();
         resetTrackTimes(1);
-      } else if (serialData.message === 'track-2-start' && !isRacing) {
+      } else if (serialData.message === 'track-2-start' && !isRacing && !displayRibbons) {
         setTrack2Start(serialData.value === '1');
         // Set the message visibility to false because we have at least 1 car on the tracks
         cleanupMessageTimeout();
         resetTrackTimes(2);
-      } else if (serialData.message === 'track-3-start' && !isRacing) {
+      } else if (serialData.message === 'track-3-start' && !isRacing && !displayRibbons) {
         setTrack3Start(serialData.value === '1');
         // Set the message visibility to false because we have at least 1 car on the tracks
         cleanupMessageTimeout();
@@ -308,6 +328,10 @@ const App = (props) => {
   }, [countdown]);
 
   useEffect(() => {
+    if (ribbonCountdown > 9) cleanupRibbonInterval();
+  }, [ribbonCountdown]);
+
+  useEffect(() => {
     if (!isAppIdle) sendMessage(MESSAGE_GET_BEAMS);
   }, [isAppIdle]);
 
@@ -350,6 +374,14 @@ const App = (props) => {
             </Row>
           </div>
           <div className="track-lane-column">
+            <div
+              className={(displayRibbons) ? 'ribbon-countdown' : 'd-none ribbon-countdown'}
+            >
+              Congratulations!! Race track will reset in
+              {' '}
+              {10 - ribbonCountdown}
+              ...
+            </div>
             <Row className="no-gutters">
               <Col>
                 <Lane
