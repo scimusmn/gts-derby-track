@@ -1,5 +1,6 @@
 .lane-container {
-  padding: 52.5px 0;
+  height: 100vh;
+  padding: 0;
 
   .timer {
     color: grey;
@@ -14,7 +15,7 @@
       font-weight: bold;
       position: absolute;
       text-align: center;
-      top: 29px;
+      top: 60px;
       width: 40px;
 
       &.seconds {
@@ -41,8 +42,8 @@
 
   img {
     display: block;
-    height: calc(100vh - 105px);
-    margin: auto;
+    height: calc(100% - 50px);
+    margin: 50px auto 0;
 
     &.ribbon {
       height: 35%;
