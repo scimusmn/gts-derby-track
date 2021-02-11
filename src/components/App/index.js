@@ -294,17 +294,17 @@ const App = (props) => {
   // Update stoplight state
   useEffect(() => {
     if (track1Start || track2Start || track3Start) {
-      if (countdown === 1) {
+      if (countdown > 0 && countdown < 3) {
         stoplightWait.stop();
         playStoplightWait();
       }
 
-      if (countdown === 2) {
+      if (countdown === 3) {
         stoplightGo.stop();
         playStoplightGo();
       }
 
-      if (countdown > 2) cleanupCountdown();
+      if (countdown > 3) cleanupCountdown();
       setStoplightComponent(RenderStoplight(countdown));
     } else {
       stopLightReset();
@@ -427,10 +427,7 @@ const App = (props) => {
             {stoplightComponent}
           </div>
         </Row>
-        <MessageBlock
-          isVisible={messageVisibility}
-          message="At least one car is required to race. Please place a car on the track and try again."
-        />
+        <MessageBlock isVisible={messageVisibility} />
       </Container>
     </>
   );

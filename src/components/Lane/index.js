@@ -1,16 +1,16 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 
-import Lane1Active from '@images/409.MA.3 Lane1 withcar_2020_RG.png';
-import Lane2Active from '@images/409.MA.4 Lane2 withcar_2020_RG.png';
-import Lane3Active from '@images/409.MA.5  Lane3 withcar_2020_RG.png';
-import Lane1Inactive from '@images/409.MA.6 Lane1 withoutcar_2020_RG4.png';
-import Lane2Inactive from '@images/409.MA.7 Lane7 withoutcar_2020_RG5.png';
-import Lane3Inactive from '@images/409.MA.8 Lane3 withoutcar_2020_RG.png';
+import Lane1Active from '@images/409 Lanes_1.png';
+import Lane2Active from '@images/409 Lanes_2.png';
+import Lane3Active from '@images/409 Lanes_3.png';
+import Lane1Inactive from '@images/409 Lanes_4.png';
+import Lane2Inactive from '@images/409 Lanes_5.png';
+import Lane3Inactive from '@images/409 Lanes_6.png';
 
-import BlueRibbon from '@images/409.MA.12 BlueRibbon_2020_RG.png';
-import RedRibbon from '@images/409.MA.13 RedRibbon_2020_RG.png';
-import YellowRibbon from '@images/409.MA.14 YellowRibbon_2020_RG.png';
+import BlueRibbon from '@images/409 BlueRibbon.png';
+import RedRibbon from '@images/409 RedRibbon.png';
+import YellowRibbon from '@images/409 YellowRibbon.png';
 
 import './index.scss';
 

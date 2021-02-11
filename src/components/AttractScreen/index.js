@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import React from 'react';
 
-import Bubble from '@images/409.MA.1 SplashScreenBubble_2020_RG.png';
+import Bubble from '@images/409 SplashScreen mediaIcon.png';
 
 import './index.scss';
 

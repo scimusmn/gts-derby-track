@@ -1,9 +1,10 @@
 import PropTypes from 'prop-types';
 import React, { useEffect, useState } from 'react';
 
-import StoplightOff from '@images/409.MA.9 Lights off_2020_RG.png';
-import StoplightRed from '@images/409.MA.10 Lights red_2020_RG.png';
-import StoplightGreen from '@images/409.MA.11 Lights green_2020_RG3.png';
+import StoplightOff from '@images/409 Light_1.png';
+import StoplightGreen from '@images/409 Light_4.png';
+import StoplightRed from '@images/409 Light_2.png';
+import StoplightYellow from '@images/409 Light_3.png';
 
 import './index.scss';
 
@@ -14,6 +15,8 @@ function RenderLights(status) {
     case 1:
       return StoplightRed;
     case 2:
+      return StoplightYellow;
+    case 3:
       return StoplightGreen;
     default:
       return StoplightOff;
