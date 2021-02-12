@@ -1,5 +1,4 @@
 .message-block.message-block.message-block {
-  font-size: 2.5em;
   max-width: 800px;
   top: 50%;
   transform: translateY(-50%);
@@ -8,5 +7,10 @@
     display: block;
     margin: auto;
     min-width: 800px;
+    
+    img {
+      margin-top: -100px;
+      width: 100%;
+    }
   }
 }
