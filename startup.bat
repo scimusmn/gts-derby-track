@@ -1,1 +1,1 @@
-yarn build & yarn serve
+yarn serve
