@@ -176,33 +176,38 @@ const App = (props) => {
     ];
 
     const raceTimes = results.filter((result) => result[1] > 0);
+    if (raceTimes.length > 0) {
+      raceTimes.sort((a, b) => {
+        if (a[1] === b[1]) return 0;
+        return (a[1] < b[1]) ? -1 : 1;
+      });
 
-    raceTimes.sort((a, b) => {
-      if (a[1] === b[1]) return 0;
-      return (a[1] < b[1]) ? -1 : 1;
-    });
-
-    for (let i = 0; i < raceTimes.length; i += 1) {
-      switch (raceTimes[i][0]) {
-        case 'track1':
-          if (raceTimes[i][1] > 0) setTrack1Placement(i + 1);
-          break;
-        case 'track2':
-          if (raceTimes[i][1] > 0) setTrack2Placement(i + 1);
-          break;
-        case 'track3':
-          if (raceTimes[i][1] > 0) setTrack3Placement(i + 1);
-          break;
-        default:
-          break;
+      for (let i = 0; i < raceTimes.length; i += 1) {
+        switch (raceTimes[i][0]) {
+          case 'track1':
+            if (raceTimes[i][1] > 0) setTrack1Placement(i + 1);
+            break;
+          case 'track2':
+            if (raceTimes[i][1] > 0) setTrack2Placement(i + 1);
+            break;
+          case 'track3':
+            if (raceTimes[i][1] > 0) setTrack3Placement(i + 1);
+            break;
+          default:
+            break;
+        }
       }
+
+      if (track1Finish > 0 || track2Finish > 0 || track3Finish > 0) setDisplayRibbons(true);
+
+      setTrack1PreviousFinish(track1Finish);
+      setTrack2PreviousFinish(track2Finish);
+      setTrack3PreviousFinish(track3Finish);
+    } else {
+      // if no cars finished, reset everything
+      resetTrackTimes();
+      sendMessage(MESSAGE_GET_BEAMS);
     }
-
-    if (track1Finish > 0 || track2Finish > 0 || track3Finish) setDisplayRibbons(true);
-
-    setTrack1PreviousFinish(track1Finish);
-    setTrack2PreviousFinish(track2Finish);
-    setTrack3PreviousFinish(track3Finish);
   };
 
   /** ***************** useInterval hooks ***************** */
@@ -319,7 +324,7 @@ const App = (props) => {
 
   // Set the delay for the ribbon display
   useEffect(() => {
-    if (!isRacing && (track1Finish > 0 || track2Finish > 0 || track3Finish)) {
+    if (!isRacing && (track1Finish > 0 || track2Finish > 0 || track3Finish > 0)) {
       setRibbonInterval(setInterval(() => {
         setRibbonCountdown((prevState) => prevState + 1);
       }, 1000));
